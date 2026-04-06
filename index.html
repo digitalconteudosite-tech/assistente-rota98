@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rota 98 Tour — Assistente de Vendas</title>
+<style>
+  :root {
+    --blue: #1565C0;
+    --blue-light: #1E88E5;
+    --blue-pale: #E3F2FD;
+    --gold: #F9A825;
+    --gold-light: #FFF8E1;
+    --green: #2E7D32;
+    --red: #C62828;
+    --gray: #546E7A;
+    --gray-light: #ECEFF1;
+    --white: #FFFFFF;
+    --shadow: 0 2px 12px rgba(0,0,0,0.10);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4F8; color: #263238; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--blue) 0%, #0D47A1 100%);
+    color: white;
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo-box {
+    width: 48px; height: 48px; background: white; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900; color: var(--blue); flex-shrink: 0;
+  }
+  header h1 { font-size: 20px; font-weight: 700; line-height: 1.2; }
+  header p { font-size: 12px; opacity: 0.8; }
+  .status-dot {
+    width: 10px; height: 10px; background: #69F0AE; border-radius: 50%;
+    margin-left: auto; animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  /* MAIN */
+  main { flex: 1; display: flex; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; padding: 16px; gap: 14px; }
+
+  /* QUICK ACTIONS */
+  .actions-title { font-size: 13px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .actions-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;
+  }
+  .action-btn {
+    background: white; border: 2px solid transparent; border-radius: var(--radius);
+    padding: 14px 12px; cursor: pointer; text-align: center;
+    box-shadow: var(--shadow); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+  .action-btn .icon { font-size: 26px; }
+  .action-btn .label { font-size: 12px; font-weight: 600; line-height: 1.3; color: #263238; }
+  .action-btn.blue { border-color: var(--blue-light); background: var(--blue-pale); }
+  .action-btn.blue .label { color: var(--blue); }
+  .action-btn.gold { border-color: var(--gold); background: var(--gold-light); }
+  .action-btn.gold .label { color: #E65100; }
+  .action-btn.green { border-color: #A5D6A7; background: #F1F8E9; }
+  .action-btn.green .label { color: var(--green); }
+  .action-btn.purple { border-color: #CE93D8; background: #F3E5F5; }
+  .action-btn.purple .label { color: #6A1B9A; }
+  .action-btn.teal { border-color: #80CBC4; background: #E0F2F1; }
+  .action-btn.teal .label { color: #00695C; }
+
+  /* CHAT CONTAINER */
+  .chat-card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+    display: flex; flex-direction: column; overflow: hidden;
+    flex: 1; min-height: 420px;
+  }
+  .chat-header {
+    background: var(--blue); color: white; padding: 12px 16px;
+    font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+  }
+  .chat-messages {
+    flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    background: #FAFAFA;
+    max-height: 450px;
+  }
+  .msg { display: flex; flex-direction: column; max-width: 88%; }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.bot { align-self: flex-start; align-items: flex-start; }
+  .bubble {
+    padding: 10px 14px; border-radius: 14px; font-size: 13.5px; line-height: 1.55;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .msg.user .bubble { background: var(--blue); color: white; border-bottom-right-radius: 4px; }
+  .msg.bot .bubble { background: white; color: #263238; border-bottom-left-radius: 4px; border: 1px solid #E0E0E0; }
+  .msg-time { font-size: 10px; color: #9E9E9E; margin-top: 2px; padding: 0 4px; }
+  .bubble h4 { font-size: 13px; color: var(--blue); margin: 6px 0 4px; border-bottom: 1px solid #E3F2FD; padding-bottom: 4px; }
+  .bubble .price { font-size: 15px; font-weight: 700; color: var(--blue); }
+  .bubble .tag { display: inline-block; background: var(--blue-pale); color: var(--blue); border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 600; margin: 2px 2px 2px 0; }
+  .bubble .tag.green { background: #E8F5E9; color: var(--green); }
+  .bubble .tag.red { background: #FFEBEE; color: var(--red); }
+  .bubble .tag.gold { background: var(--gold-light); color: #E65100; }
+  .bubble ul { margin: 6px 0 6px 18px; }
+  .bubble li { margin-bottom: 3px; }
+  .bubble .info-row { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0; font-size: 12.5px; }
+  .bubble .info-row .ico { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .bubble .step { background: #F5F5F5; border-radius: 8px; padding: 8px 10px; margin: 5px 0; font-size: 12.5px; border-left: 3px solid var(--blue); }
+  .bubble .step strong { color: var(--blue); }
+  .bubble .warning { background: #FFF3E0; border-radius: 8px; padding: 8px 10px; margin: 6px 0; font-size: 12.5px; border-left: 3px solid var(--gold); }
+  .bubble .success { background: #E8F5E9; border-radius: 8px; padding: 8px 10px; margin: 6px 0; font-size: 12.5px; border-left: 3px solid var(--green); }
+  .bubble a { color: var(--blue); font-weight: 600; }
+
+  /* QUICK QUESTIONS */
+  .quick-qs { padding: 10px 16px; border-top: 1px solid #F0F0F0; background: #FAFAFA; display: flex; flex-wrap: wrap; gap: 6px; }
+  .qq-chip {
+    background: var(--blue-pale); color: var(--blue); border: 1px solid #BBDEFB;
+    border-radius: 20px; padding: 4px 11px; font-size: 11.5px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .qq-chip:hover { background: var(--blue); color: white; }
+
+  /* INPUT */
+  .chat-input-row {
+    display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid #E0E0E0; background: white;
+  }
+  .chat-input {
+    flex: 1; border: 1.5px solid #CFD8DC; border-radius: 24px; padding: 9px 16px;
+    font-size: 13.5px; outline: none; transition: border 0.2s; font-family: inherit;
+  }
+  .chat-input:focus { border-color: var(--blue-light); }
+  .send-btn {
+    background: var(--blue); color: white; border: none; border-radius: 50%;
+    width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; transition: background 0.2s; flex-shrink: 0;
+  }
+  .send-btn:hover { background: #0D47A1; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 200; align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white; border-radius: 16px; max-width: 560px; width: 100%;
+    max-height: 88vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .modal-header {
+    background: linear-gradient(135deg, var(--blue), #0D47A1);
+    color: white; padding: 18px 20px; display: flex; align-items: center; gap: 10px;
+    border-radius: 16px 16px 0 0;
+  }
+  .modal-header h2 { font-size: 17px; font-weight: 700; flex: 1; }
+  .modal-close {
+    background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 50%;
+    width: 30px; height: 30px; font-size: 18px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .modal-body { padding: 20px; }
+  .modal-body h3 { font-size: 14px; color: var(--blue); margin: 14px 0 6px; font-weight: 700; }
+  .modal-body p { font-size: 13.5px; line-height: 1.6; color: #37474F; margin-bottom: 8px; }
+  .step-card {
+    background: var(--blue-pale); border-radius: 10px; padding: 12px 14px; margin: 6px 0;
+    border-left: 4px solid var(--blue); display: flex; gap: 10px; align-items: flex-start;
+  }
+  .step-num {
+    background: var(--blue); color: white; border-radius: 50%; width: 26px; height: 26px;
+    font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-card p { margin: 0; font-size: 13px; line-height: 1.5; }
+  .alert-box {
+    background: #FFF8E1; border: 1.5px solid var(--gold); border-radius: 10px;
+    padding: 12px 14px; margin: 10px 0; font-size: 13px; display: flex; gap: 8px;
+  }
+  .link-btn {
+    display: inline-block; background: var(--blue); color: white; border-radius: 8px;
+    padding: 10px 18px; font-size: 13.5px; font-weight: 600; text-decoration: none;
+    margin-top: 10px; transition: background 0.2s;
+  }
+  .link-btn:hover { background: #0D47A1; }
+  .link-btn.gold { background: var(--gold); color: #333; }
+  .cred-badge {
+    display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0;
+  }
+  .badge {
+    flex: 1; min-width: 200px; background: var(--blue-pale); border: 2px solid var(--blue-light);
+    border-radius: 10px; padding: 12px; text-align: center;
+  }
+  .badge .b-icon { font-size: 32px; }
+  .badge h4 { font-size: 13px; font-weight: 700; color: var(--blue); margin: 4px 0 2px; }
+  .badge p { font-size: 12px; color: var(--gray); margin: 0; }
+  .colonia-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+  .colonia-card {
+    flex: 1; min-width: 140px; background: #E3F2FD; border: 1px solid #BBDEFB;
+    border-radius: 10px; padding: 10px 12px;
+  }
+  .colonia-card h4 { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+  .colonia-card p { font-size: 11.5px; line-height: 1.5; color: #37474F; margin: 0; }
+  .typing { display: flex; gap: 4px; align-items: center; padding: 8px 0; }
+  .typing span { width: 7px; height: 7px; background: #B0BEC5; border-radius: 50%; animation: bounce 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+  @media (max-width: 600px) {
+    main { padding: 10px; }
+    .actions-grid { grid-template-columns: repeat(2, 1fr); }
+    .chat-messages { max-height: 320px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-box">R98</div>
+  <div>
+    <h1>Rota 98 Tour</h1>
+    <p>Assistente de Vendas — Equipe Interna</p>
+  </div>
+  <div class="status-dot" title="Assistente ativo"></div>
+</header>
+
+<main>
+  <div>
+    <div class="actions-title">⚡ Ações Rápidas</div>
+    <div class="actions-grid">
+      <button class="action-btn blue" onclick="openModal('modal-credenciais')">
+        <span class="icon">🏅</span>
+        <span class="label">Credenciais Rota 98</span>
+      </button>
+      <button class="action-btn gold" onclick="openModal('modal-contrato')">
+        <span class="icon">📋</span>
+        <span class="label">Envio Obrigatório do Contrato</span>
+      </button>
+      <button class="action-btn green" onclick="openModal('modal-formulario')">
+        <span class="icon">📝</span>
+        <span class="label">Formulário de Cadastro de Cliente</span>
+      </button>
+      <button class="action-btn purple" onclick="openModal('modal-calculadora')">
+        <span class="icon">💳</span>
+        <span class="label">Calculadora de Cartão</span>
+      </button>
+      <button class="action-btn teal" onclick="openModal('modal-colonia')">
+        <span class="icon">⛴️</span>
+        <span class="label">Promoção Bate e Volta Colônia</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="chat-card">
+    <div class="chat-header">
+      🤖 Assistente IA — Consulta de Serviços e Pacotes
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg bot">
+        <div class="bubble">
+          Olá! 👋 Sou o assistente da <strong>Rota 98 Tour</strong>.<br><br>
+          Posso te ajudar a consultar informações sobre passeios, preços, horários e o que está incluso em cada serviço para os destinos:<br><br>
+          🏔️ <strong>Bariloche</strong> &nbsp;|&nbsp; 🌆 <strong>Buenos Aires</strong> &nbsp;|&nbsp; 🏖️ <strong>Rio de Janeiro</strong><br><br>
+          Use as <strong>perguntas rápidas</strong> abaixo ou digite sua dúvida livremente!
+        </div>
+        <div class="msg-time">Agora</div>
+      </div>
+    </div>
+    <div class="quick-qs" id="quickQs">
+      <span class="qq-chip" onclick="askQuestion('Quais passeios tem em Bariloche?')">Passeios Bariloche</span>
+      <span class="qq-chip" onclick="askQuestion('Quais passeios tem em Buenos Aires?')">Passeios Buenos Aires</span>
+      <span class="qq-chip" onclick="askQuestion('Quais passeios tem no Rio de Janeiro?')">Passeios Rio de Janeiro</span>
+      <span class="qq-chip" onclick="askQuestion('Quanto custa o traslado do aeroporto?')">Traslados</span>
+      <span class="qq-chip" onclick="askQuestion('Como funciona o pagamento?')">Formas de pagamento</span>
+      <span class="qq-chip" onclick="askQuestion('Quais passeios de inverno tem em Bariloche?')">Passeios de Inverno</span>
+      <span class="qq-chip" onclick="askQuestion('Quais passeios de barco tem?')">Passeios de Barco</span>
+      <span class="qq-chip" onclick="askQuestion('Tem show de tango?')">Show de Tango</span>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Digite sua pergunta sobre passeios, preços, horários..." onkeydown="if(event.key==='Enter')sendMessage()" />
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL: CREDENCIAIS -->
+<div class="modal-overlay" id="modal-credenciais">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:22px">🏅</span>
+      <h2>Credenciais Rota 98 Tour</h2>
+      <button class="modal-close" onclick="closeModal('modal-credenciais')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>A Rota 98 Tour é uma <strong>agência de turismo regularizada tanto no Brasil quanto na Argentina</strong>. Use esta informação sempre que o cliente demonstrar insegurança ou dúvida sobre a idoneidade da empresa.</p>
+      <div class="cred-badge">
+        <div class="badge">
+          <div class="b-icon">🇧🇷</div>
+          <h4>CADASTUR — Brasil</h4>
+          <p><strong>Rota 98 Tour Turismo Receptivo LTDA</strong></p>
+          <p>CNPJ: 61.221.696/0001-70</p>
+          <p>Atividade: Agência de Turismo</p>
+          <p>Ministério do Turismo / Secretaria Nacional de Turismo</p>
+        </div>
+        <div class="badge">
+          <div class="b-icon">🇦🇷</div>
+          <h4>RNAV — Argentina</h4>
+          <p><strong>Rota98 Tour S.R.L</strong></p>
+          <p>Legajo Nº: 19491</p>
+          <p>Registro Nacional de Agencias de Viajes</p>
+        </div>
+      </div>
+      <div class="alert-box">
+        <span>💡</span>
+        <p><strong>Quando usar:</strong> Sempre que o cliente demonstrar insegurança, dúvida ou resistência. Envie a imagem de credenciais como forma de transmitir confiança e credibilidade. Somos uma agência devidamente cadastrada nos órgãos competentes de turismo dos dois países.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONTRATO -->
+<div class="modal-overlay" id="modal-contrato">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:22px">📋</span>
+      <h2>Envio Obrigatório do Contrato</h2>
+      <button class="modal-close" onclick="closeModal('modal-contrato')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box">
+        <span>⚠️</span>
+        <p><strong>ATENÇÃO:</strong> O envio do contrato/política de cancelamento é <strong>OBRIGATÓRIO</strong> antes de qualquer pagamento ou confirmação de reserva — para todos os destinos e todos os serviços.</p>
+      </div>
+      <h3>Procedimento:</h3>
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <p>Enviar o <strong>contrato ao cliente</strong> (política de cancelamento e todas as normas da empresa)</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <p>Enviar junto a <strong>mensagem informando que o pagamento caracteriza o aceite dos termos:</strong><br>
+        <em>"Ao realizar o pagamento após este envio, o cliente declara ciência e aceite integral de todas as cláusulas, incluindo a política de cancelamento."</em></p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <p>Enviar a <strong>chave Pix ou link de pagamento</strong></p>
+      </div>
+      <p style="margin-top:10px; font-size:13px; color: var(--gray);">✅ <strong>Não é necessário aguardar confirmação do cliente.</strong> Conforme o próprio contrato, o pagamento realizado após o envio caracteriza ciência e aceite integral das cláusulas.</p>
+      <div class="alert-box" style="background:#E8F5E9; border-color:#A5D6A7;">
+        <span>🛡️</span>
+        <p>O contrato serve para <strong>dar segurança ao cliente</strong> e também para <strong>proteger a empresa</strong>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: FORMULÁRIO -->
+<div class="modal-overlay" id="modal-formulario">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:22px">📝</span>
+      <h2>Formulário de Cadastro de Cliente</h2>
+      <button class="modal-close" onclick="closeModal('modal-formulario')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Envie o formulário de cadastro para <strong>todos os clientes que fecharem vendas</strong>.</p>
+      <div class="alert-box">
+        <span>📌</span>
+        <p>O cadastro do cliente é <strong>obrigatório</strong> após o fechamento de qualquer venda. Não se esqueça de enviar!</p>
+      </div>
+      <h3>Link do Formulário:</h3>
+      <a href="https://form.jotform.com/241818239323659" target="_blank" class="link-btn">
+        🔗 Acessar Formulário JotForm
+      </a>
+      <p style="margin-top:12px; font-size:12.5px; color:var(--gray);">https://form.jotform.com/241818239323659</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CALCULADORA -->
+<div class="modal-overlay" id="modal-calculadora">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:22px">💳</span>
+      <h2>Calculadora de Cartão</h2>
+      <button class="modal-close" onclick="closeModal('modal-calculadora')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Use a planilha para calcular os valores parcelados no cartão de crédito.</p>
+      <h3>Lembre-se:</h3>
+      <ul style="margin:8px 0 8px 18px; font-size:13px; line-height:1.8;">
+        <li>Pagamento <strong>100% à vista via PIX</strong> tem <strong>10% de desconto</strong></li>
+        <li>Parcelamos em até <strong>12x sem juros no cartão</strong> (Bariloche e RJ) ou <strong>10x sem juros</strong> (Buenos Aires)</li>
+        <li>Para parcelamento, solicitar o <strong>link de pagamento</strong></li>
+      </ul>
+      <a href="https://docs.google.com/spreadsheets/d/1jeT1vso_KpaoEm7zoiHD8nmDYtYuJJCKCE7Xw9TJV8s/edit?usp=sharing" target="_blank" class="link-btn gold">
+        📊 Abrir Calculadora de Cartão
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: COLÔNIA -->
+<div class="modal-overlay" id="modal-colonia">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:22px">⛴️</span>
+      <h2>Promoção — Bate e Volta Colônia</h2>
+      <button class="modal-close" onclick="closeModal('modal-colonia')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="colonia-row">
+        <div class="colonia-card">
+          <h4>🕐 MEIO DIA EM COLÔNIA</h4>
+          <p>Inclui travessia de barco ida e volta<br><strong>Horário: 12:50 às 20:15</strong></p>
+        </div>
+        <div class="colonia-card">
+          <h4>⭐ DIA IMPERDÍVEL</h4>
+          <p>Inclui ida e volta de barco + walking tour guiado<br><strong>08:00 às 18:00<br>10:30 às 18:00<br>10:30 às 20:15</strong></p>
+        </div>
+        <div class="colonia-card" style="background:#E8F5E9; border-color:#A5D6A7;">
+          <h4>🍽️ DAY TOUR CLÁSSICO</h4>
+          <p>Ida e volta de barco + walking tour + almoço no El Refugio (sem bebida)<br><strong>08:00 às 18:00<br>10:30 às 18:00<br>10:30 às 20:15</strong></p>
+        </div>
+      </div>
+      <div class="alert-box" style="background:#FFEBEE; border-color:#EF9A9A;">
+        <span>⚠️</span>
+        <div>
+          <p><strong>VERIFICAÇÃO OBRIGATÓRIA ANTES DA VENDA!</strong></p>
+          <p>Esses passeios esgotam muito rápido. Antes de confirmar com o cliente, verifique disponibilidade:</p>
+          <a href="https://www.coloniaexpress.com/ar" target="_blank" class="link-btn" style="margin-top:6px; padding:7px 14px; font-size:12.5px;">
+            🔍 Verificar Disponibilidade — coloniaexpress.com/ar
+          </a>
+        </div>
+      </div>
+      <h3>Como verificar:</h3>
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <p>Acessar o site e ir na aba <strong>Day Tour</strong></p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <p>Inserir a <strong>data</strong> e <strong>quantidade de pessoas</strong></p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <p>✅ Se o passeio aparecer → <strong>disponível para venda</strong><br>❌ Se não aparecer → <strong>não disponível</strong></p>
+      </div>
+      <p style="font-size:12px; color:var(--gray); margin-top:10px;">⚡ Ainda mais importante para datas próximas, onde a disponibilidade muda rapidamente.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// KNOWLEDGE BASE — ROTA 98 TOUR
+// ============================================================
+const KB = {
+
+  // --- BARILOCHE ---
+  bariloche_intro: `<h4>🏔️ Bariloche — Passeios Disponíveis</h4>
+<b>Traslados:</b> R$180 (só ida) / R$350 (ida e volta) — valor por carro, hotéis centrais<br><br>
+<b>Passeios Terrestres:</b><br>
+<span class="tag">Circuito Chico R$230</span><span class="tag">Cerro Catedral R$235</span><span class="tag">7 Lagos R$510</span><span class="tag">Cerro Tronador R$480</span><span class="tag">Bolsón/Lago Puelo R$465</span><span class="tag">Circuito Grande R$490</span><br><br>
+<b>Passeios de Barco:</b><br>
+<span class="tag">Isla Victoria + Arrayanes R$655</span><span class="tag">Puerto Blest R$685</span><br><br>
+<b>Passeios de Inverno ❄️:</b><br>
+<span class="tag">Snowcat Patagonia R$1.460</span><span class="tag">Nieve al Limite R$960</span><br><br>
+<b>Passeios de Verão ☀️:</b><br>
+<span class="tag">Rafting Rio Manso R$810</span><span class="tag">Rafting Villegas R$600</span><span class="tag">Kayak R$490</span><span class="tag">Barco à Vela R$610</span><span class="tag">Cavalgada Lago Moreno R$400</span><span class="tag">Cavalgada Campanário R$345</span><span class="tag">Cavalgada La Fragua R$925</span><span class="tag">Canopy R$440</span><span class="tag">Buceo R$460</span><br><br>
+Pergunte sobre qualquer passeio específico para mais detalhes!`,
+
+  circuito_chico: `<h4>🗺️ Circuito Chico — A Apresentação de Bariloche</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 230,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>08:30 às 12:30 <em>ou</em> 14:30 às 18:30</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Verão e Inverno</span></div>
+<b>Descrição:</b> Bahía López, Punto Panorámico, cadeira aérea do Cerro Campanario (não inclusa), Puerto Pañuelo, Hotel Llao Llao, Capela San Eduardo.<br><br>
+<span class="tag green">✅ INCLUSO</span><br>
+• Traslado no hotel até km 8<br>
+• Guia inglês/espanhol<br><br>
+<span class="tag red">❌ NÃO INCLUSO</span><br>
+• Alimentação, despesas pessoais<br>
+• Teleférico ao Cerro Campanário (consultar valor)<br><br>
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
+
+  cerro_catedral: `<h4>🎿 Cerro Catedral</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 235,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>13:00 às 17:00</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Verão e Inverno</span></div>
+<b>Descrição:</b> Maior centro de esqui do hemisfério sul! Trajeto de 40 min até Villa Catedral. Vistas do Cerro Tronador e vulcão Puntiagudo. Teleférico opcional. Esqui alpino, snowboard, mountain bike e caminhadas.<br><br>
+<span class="tag green">✅ INCLUSO</span><br>
+• Traslado no hotel até km 8 • Guia inglês/espanhol<br><br>
+<span class="tag red">❌ NÃO INCLUSO</span><br>
+• Alimentação, despesas pessoais, equipamento de esqui, roupas de neve, meios de elevação (consultar)<br><br>
+<div class="warning">Sujeito a alterações climáticas.</div>`,
+
+  sete_lagos: `<h4>🏞️ 7 Lagos — San Martín de los Andes</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 510,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>08:00 às 18:00</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Verão e Inverno</span></div>
+<b>Descrição:</b> Rota pelos 7 lagos glaciares da Patagônia. Lagos Correntoso, Espejo, Bailey Willis, Escondido, Villarino, Falkner e Machónico. Parada em Villa La Angostura e tempo livre em San Martín de los Andes para almoço e artesanato.<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado hotel até km 8 • Guia inglês/espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br>
+<div class="warning">Sujeito a alterações climáticas.</div>`,
+
+  tronador: `<h4>🌋 Cerro Tronador e Ventisquero Negro</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 480,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>09:00 às 18:00</span></div>
+<b>Descrição:</b> Rumo ao vulcão Cerro Tronador passando pelos lagos Gutiérrez e Mascardi. Pampa Argentino, ponte sobre o rio Manso, acampamento Los Rápidos e Pampa Linda. Glaciar Ventisquero Negro com cachoeiras impressionantes.<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado hotel até km 8 • Guia inglês/espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingresso ao Parque Nacional (consultar)<br>`,
+
+  bolson: `<h4>🌿 Bolsón e Lago Puelo</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 465,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Quinta e Sábado — 08:30 às 18:30</span></div>
+<b>Descrição:</b> 129 km pela estrada nacional 40 até El Bolsón. Lagos Gutiérrez, Catedral, Mascardi, Guillelmo e rio Villegas. Fazenda de trutas, fábrica de doces e Parque Nacional Puelo. Feira de artesanato na praça Pagano.<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado hotel até km 8 • Guia em espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingresso Parque Nacional (consultar)<br>`,
+
+  isla_victoria: `<h4>⛵ Isla Victoria y Bosque de Arrayanes</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 655,00</span> acima de 12 anos &nbsp;|&nbsp; <span class="price">R$ 355,00</span> crianças 5 a 12 anos</span></div>
+<div class="info-row"><span class="ico">🚌</span><span>Transfer opcional: R$ 190,00 por pessoa ida e volta</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>10:00 às 18:30 <em>ou</em> 14:00 às 18:30</span></div>
+<b>Descrição:</b> Parte de Puerto Pañuelo, 30 min de barco até Ilha Victoria. Trilhas, pinturas rupestres, Playa del Toro. Segue para Quetrihué — Parque Nacional Los Arrayanes, com floresta única de arrayanes troncos canela.<br><br>
+<span class="tag green">✅ INCLUSO</span> Guia inglês/espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Taxa de embarque • Ingresso Parque Nacional • Traslado até Puerto Pañuelo (opcional, consultar ponto de encontro)<br>
+<div class="warning">Também disponível serviço VIP no Catamarã (contratado separadamente).</div>`,
+
+  puerto_blest: `<h4>🚢 Puerto Blest y Cascada Los Cántaros</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 685,00</span> acima 12 anos &nbsp;|&nbsp; <span class="price">R$ 370,00</span> crianças 5 a 12 anos</span></div>
+<div class="info-row"><span class="ico">➕</span><span>Extensão Lago Frias: <strong>R$320 adulto / R$220 criança</strong> (opcional)</span></div>
+<div class="info-row"><span class="ico">🚌</span><span>Transfer: R$250/pessoa ida e volta (opcional)</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>10:00 às 16:45 <em>ou</em> 13:00 às 19:00</span></div>
+<b>Descrição:</b> Catamarã pelo Braço Blest do Lago Nahuel Huapi passando pela Isla Centinela. Chega em Puerto Cántaros na Selva Valdiviana. Trilha ao Lago Los Cántaros e cachoeira. Almoço em Puerto Blest. Extensão ao Lago Frias opcional.<br><br>
+<span class="tag green">✅ INCLUSO</span> Guia inglês/espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Taxa de embarque • Ingresso Parque Nacional • Transfer até Puerto Pañuelo<br>`,
+
+  snowcat: `<h4>❄️ Snowcat Patagonia</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 1.460,00</span> por pessoa +12 anos &nbsp;|&nbsp; <span class="price">R$ 1.270,00</span> crianças 4 a 12 anos</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>08:00 às 19:00</span></div>
+<div class="info-row"><span class="ico">❄️</span><span>Apenas inverno (junho a setembro)</span></div>
+<b>Descrição:</b> Pela rota 40 ao sul, passando pelos lagos Gutiérrez, Mascardi e Guilhelmo. No plateau a 1700m, passeio em SNOWCATs e Toyotas Hilux 4x4 com esteiras para até 10 passageiros. Tempo livre para almoço.<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado hotel/ponto de encontro • Guia turístico • Passeio em caminhonete 4x4 com esteiras • Meios de elevação • Pistas de culipatins<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Roupa de neve<br>`,
+
+  nieve_al_limite: `<h4>🏔️ Nieve al Limite</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 960,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>10:00 às 19:00</span></div>
+<div class="info-row"><span class="ico">❄️</span><span>Apenas inverno</span></div>
+<b>Descrição:</b> Rumo à Villa La Angostura, contornando o lago Nahuel Huapi. Almoço com empanadas tradicionais. Brincadeiras na neve, culipatins. Guias oferecem alfajor e chá de rosa mosqueta.<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado hotel/ponto de encontro • Almoço em Villa La Angostura • Mini trekking e tempo livre na neve • Chá de rosa mosqueta e alfajor<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Roupa de neve<br>
+<div class="warning">⚠️ Levar RG ou passaporte válido, permissão de saída para menores. Fazer declaração jurada para entrada no país (24h antes da excursão).</div>`,
+
+  rafting_chile: `<h4>🌊 Rafting Rio Manso — Fronteira com Chile</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 810,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>09:00 às 18:00</span></div>
+<div class="info-row"><span class="ico">☀️</span><span>Verão</span></div>
+<b>Descrição:</b> Camping La Pasarela de Río Manso, Rota Nacional 40 (70km sul) + Rota Provincial 83 (+40km). Equipamento: neoprene, jaqueta, botas, colete, capacete. ~2h de rafting no Rio Manso Inferior terminando na fronteira com o Chile.<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado • Guia espanhol • Lanche<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br>
+<div class="warning">⚠️ Não tem acessibilidade • Permitido a partir de 14 anos • Não é permitido mascotes • Levar muda de roupa e dois pares de calçados adequados para molhar.</div>`,
+
+  rafting_villegas: `<h4>🌊 Rafting Rio Manso — Villegas</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 600,00</span> por pessoa (menores e adultos mesma tarifa)</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>08:00–13:30 &nbsp;|&nbsp; 11:00–17:00 &nbsp;|&nbsp; 14:00–19:30</span></div>
+<b>Descrição:</b> Confluência dos rios Manso e Villegas. 6 corredeiras de classe II e III, ideal para famílias com crianças. ~1h de atividade. Retorno à base para lanche.<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado • Guia espanhol • Lanche<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br>
+<div class="warning">⚠️ Não tem acessibilidade • Permitido a partir de 5 anos • Não é permitido mascotes • Levar muda de roupa e dois pares de calçados para molhar.</div>`,
+
+  kayak: `<h4>🛶 Kayak no Lago Gutiérrez</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 490,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>13:00 às 17:00</span></div>
+<b>Descrição:</b> Do centro até o Camping Lago Gutiérrez. Técnicas de remo, trajes e coletes de segurança. Passeio de caiaque com parada para lanche. Transfer de volta ao centro.<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado • Guia espanhol • Equipamento • Lanche<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br>
+<div class="warning">⚠️ Importante levar: toalha, malha e tênis. Não inclui roupas de neoprene.</div>`,
+
+  vela: `<h4>⛵ Passeio de Barco à Vela</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 610,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>10:00 / 13:30 / 17:00 — Duração 3 horas</span></div>
+<b>Descrição:</b> Veleiro desde Puerto Petúnia, Braço Campanário, península de San Pedro até Puerto Bueno. Lago aberto em direção à Isla de los Víveres e Puerto Venado. Praias e baías recônditas. Você pode pilotar o veleiro!<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado • Guia espanhol • Infusões e snacks<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Transfer (ponto de encontro: Puerto Petúnia — Av. Bustillo km 13.500)<br>`,
+
+  cavalgada: `<h4>🐎 Cavalgadas em Bariloche</h4>
+<b>Opção 1 — Lago Moreno:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 400,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Às 10:00 — Duração 3 horas</span></div>
+Praia leste do Lago Moreno, foz do rio Casa de Piedra. Vista dos cerros López, Capilla, Bella Vista e Goye.<br><br>
+<b>Opção 2 — Cerro Campanário:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 345,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>10:00 / 14:00 / 16:00 — Duração 1h30</span></div>
+Bosques de coihue, vista do lago Nahuel Huapi e ilha de San Pedro. Galope nas pampas.<br><br>
+<b>Opção 3 — La Fragua (com almoço churrasco):</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 925,00</span> por pessoa (inclui almoço e bebidas!)</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>09:30–15:00 <em>ou</em> 12:00–18:00</span></div>
+Estepe a 30km, fauna típica (lebres, veados, condores). Almoço com assados e saladas.<br><br>
+<span class="tag green">✅ INCLUSO nas 3</span> Guia espanhol • Passeio a cavalo<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação (exceto La Fragua) • Despesas pessoais • Transfer<br>`,
+
+  canopy: `<h4>🌲 Canopy</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 440,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>10:00 ou 14:00</span></div>
+<b>Descrição:</b> Percurso de 1.500 metros (um dos mais longos da América do Sul) feito em 8 trechos. Veículo 4x4 sobe a montanha até bosque antigo. Capacete, arnês, mosquetões inclusos. Adequado para toda a família, seguro mesmo na chuva.<br><br>
+<span class="tag green">✅ INCLUSO</span> Guia espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Alimentação • Transfer<br>`,
+
+  circuito_grande: `<h4>🗺️ Circuito Grande</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 490,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Segunda, Quarta e Sexta — 09:00 às 18:00</span></div>
+<b>Descrição:</b> ~260km partindo de Bariloche. Rio Limay até o Anfiteatro (formação rochosa). Vale Encantado com o Dedo de Deus. Villa Traful (pesca de salmão). Puerto Arrayán, El Portezuelo, rota dos Sete Lagos, parada em Villa La Angostura.<br><br>
+<span class="tag green">✅ INCLUSO</span> Guia inglês/espanhol • Pick up hotéis do centro e até 8km<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br>`,
+
+  buceo: `<h4>🤿 Bautismo de Buceo</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 460,00</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>12:00 / 14:00 / 16:00</span></div>
+<b>Descrição:</b> Aula teórica, equipamento e mergulho no lago. Visibilidade impressionante — muros de pedra, plantas subaquáticas, árvores, troncos, pedras e poleiros. Experiência única na montanha.<br><br>
+<span class="tag green">✅ INCLUSO</span> Roupas de mergulho<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Alimentação<br>
+<div class="warning">Sujeito a alterações climáticas.</div>`,
+
+  pagamento_bariloche: `<h4>💳 Dados de Pagamento — Bariloche</h4>
+<b>Chave PIX (CNPJ):</b> <code>55211880000137</code><br>
+<div class="info-row"><span class="ico">💰</span><span>Pagamento 100% à vista via PIX tem <strong>10% de desconto</strong></span></div>
+<b>Transferência Bancária:</b><br>
+Banco INTER (077) • Agência: 0001 • Conta: 36257206-2<br>
+CNPJ: 55.211.880/0001-37<br><br>
+<b>Cartão de Crédito:</b> Parcelamento em até <strong>12x sem juros</strong> — solicitar link de pagamento<br>`,
+
+  // --- BUENOS AIRES ---
+  buenosaires_intro: `<h4>🌆 Buenos Aires — Serviços Disponíveis</h4>
+<b>Traslados:</b> Sedan e carro grande, Ezeiza e Aeroparque<br><b>Kit Boas-Vindas:</b> R$190 (ou R$95 com transfer contratado)<br><br>
+<b>City Tours:</b><br>
+<span class="tag">City Tour Privado Full Day R$890/carro</span><span class="tag">City Tour com Fotos R$550/carro</span><span class="tag">Noturno Fotográfico R$600/carro</span><span class="tag">12 Pontos Compartilhado R$135-270</span><span class="tag">Palermo Privado R$650</span><br><br>
+<b>Estádios:</b><br>
+<span class="tag">Boca+River Privado R$500/carro</span><span class="tag">Boca+River Compartilhado R$485/pessoa</span><br><br>
+<b>Barco/Passeios:</b><br>
+<span class="tag">Tigre Privado R$390/pessoa</span><span class="tag">Tigre Premium R$480/pessoa</span><span class="tag">Tigre Clássico R$235/pessoa</span><span class="tag">Navegação R$155-250</span><span class="tag">Pôr do Sol Open Bar R$275-330</span><br><br>
+<b>Parques:</b><br>
+<span class="tag">Parque de La Costa R$400</span><span class="tag">Bioparque Temaikén R$480</span><span class="tag">Mundo Marino R$945</span><span class="tag">Campanópolis R$320</span><br><br>
+<b>Gastronomia:</b><br>
+<span class="tag">Bodega Gamboa R$750</span><br><br>
+<b>Shows de Tango:</b><br>
+<span class="tag">Madero Tango</span><span class="tag">Tango Porteño</span><span class="tag">Señor Tango</span><span class="tag">Piazzolla Tango</span>`,
+
+  traslado_ba: `<h4>🚗 Traslados — Buenos Aires</h4>
+<div class="warning">⚠️ Valores por carro, não por pessoa. Madrugada tem adicional de R$65. 10% desconto à vista PIX.</div>
+<b>Carro Sedan (até 4 pessoas):</b><br>
+• Aeroporto Ezeiza: <span class="price">R$190</span> só ida / <span class="price">R$370</span> ida e volta<br>
+• Aeroparque Jorge Newbery: <span class="price">R$130</span> só ida / <span class="price">R$255</span> ida e volta<br>
+• Conexão entre aeroportos: <span class="price">R$250</span> só ida / <span class="price">R$490</span> ida e volta<br><br>
+<b>Carro Grande (até 4 pessoas):</b><br>
+• Aeroporto Ezeiza: <span class="price">R$250</span> só ida / <span class="price">R$500</span> ida e volta<br>
+• Aeroparque Jorge Newbery: <span class="price">R$190</span> só ida / <span class="price">R$385</span> ida e volta<br>
+• Conexão entre aeroportos: <span class="price">R$350</span> só ida / <span class="price">R$690</span> ida e volta<br><br>
+• Recorrido dentro da capital: <span class="price">R$210</span>`,
+
+  kit_boas_vindas: `<h4>🎁 Kit Boas-Vindas — Buenos Aires</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 190,00</span> (avulso) &nbsp;|&nbsp; <span class="price">R$ 95,00</span> se já contratou transfer (50% desconto)</span></div>
+<b>Inclui:</b>
+<ul>
+<li>🛍️ Bolsa ecológica Rota 98 (sacolas plásticas são proibidas em BA!)</li>
+<li>📱 Chip pré-pago 3G/4G desbloqueado (precisa recarregar internet)</li>
+<li>🚌 Cartão SUBE (única forma de usar ônibus, trem e metrô — precisa créditos)</li>
+<li>🔌 Adaptador universal com 2 entradas</li>
+<li>🍫 Alfajor de boas-vindas!</li>
+</ul>`,
+
+  citytour_ba: `<h4>🏙️ City Tours — Buenos Aires</h4>
+<b>1. City Tour Privado Full Day com Fotos:</b><br>
+<span class="price">R$890/carro</span> (até 4 pax) &nbsp;|&nbsp; <span class="price">R$1.250/carro</span> (até 6 pax) &nbsp;|&nbsp; 9h de duração<br>
+15 pontos + fotos profissionais + parada Puerto Madero<br><br>
+<b>2. City Tour Privado com Ensaio Fotográfico (meio dia):</b><br>
+<span class="price">R$550/carro</span> (até 4 pax) &nbsp;|&nbsp; <span class="price">R$750/carro</span> (até 6 pax)<br>
+Manhã a partir 8h ou tarde a partir 14h. 14 pontos + fotos profissionais<br><br>
+<b>3. City Tour Noturno Privado com Fotos:</b><br>
+<span class="price">R$600/carro</span> (até 4 pax) &nbsp;|&nbsp; <span class="price">R$850/carro</span> (até 6 pax)<br>
+A partir das 18h. 6 pontos iluminados + fotos profissionais<br><br>
+<b>4. City Tour 12 Pontos Compartilhado:</b><br>
+<span class="price">R$135/pessoa</span> (sem almoço) &nbsp;|&nbsp; <span class="price">R$180/pessoa</span> (fotográfico) &nbsp;|&nbsp; <span class="price">R$270/pessoa</span> (com almoço + degustação)<br>
+Todos os dias às 10h. Guia em português, inglês e espanhol<br><br>
+<b>5. City Tour Palermo Privado:</b><br>
+<span class="price">R$650/carro</span> (até 4 pax) — Rosedal, Jardim Japonês, Planetário, Ecoparque, Jardim Botânico<br>`,
+
+  estadios_ba: `<h4>⚽ Tour nos Estádios — Boca Juniors e River Plate</h4>
+<b>Privado:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$500/carro</span> até 4 pax &nbsp;|&nbsp; <span class="price">R$700/carro</span> até 6 pax</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Horário personalizado — Duração 3h30</span></div>
+La Bombonera (externo + Museu da Paixão Boquense com Mural de Maradona) + Estádio River Plate (externo + Museu)<br><br>
+<b>Compartilhado:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$485/pessoa</span></span></div>
+<div class="info-row"><span class="ico">📅</span><span>Terça, Quinta e Sábado — a partir das 08:45</span></div>
+Inclui ingressos e guia português/espanhol/inglês. Drop off nas Galerías Pacífico e Obelisco.<br>`,
+
+  tigre_ba: `<h4>🌿 Tigre — Delta do Paraná</h4>
+<b>Opção 1 — Privado Fotográfico:</b><br>
+<span class="price">R$390/pessoa</span> (mín. 2 pessoas) — Manhã 8:30 ou Tarde 14:30<br>
+Catamarã, jardim do Museu de Arte de Tigre, Puerto de Frutos, Cassino Trilenium. Fotos profissionais.<br><br>
+<b>Opção 2 — Tigre Premium Privado:</b><br>
+<span class="price">R$480/pessoa</span> (mín. 2) — Saída hotel 9:30 / barco 10:00 / retorno ~15h<br>
+Passeio costeiro catamarã pelo Rio de la Plata e Delta do Paraná (1h50). Fotos profissionais.<br><br>
+<b>Opção 3 — Delta Clássico Compartilhado:</b><br>
+<span class="price">R$235/pessoa</span> — Todos os dias às 9h<br>
+Navegação 1h pelos rios do Delta. Guia em português/espanhol/inglês. Drop off Puerto Madero/Obelisco.<br>`,
+
+  navegacao_ba: `<h4>🛳️ Navegações — Buenos Aires</h4>
+<b>Postais de Buenos Aires (Rio de la Plata):</b><br>
+<span class="price">R$250/pessoa</span> ida e volta &nbsp;|&nbsp; <span class="price">R$155/pessoa</span> só ida<br>
+Saídas Puerto Madero: 9:30 / 11:30 / 14:00 / 16:00<br>
+40 minutos. Vista panorâmica, Reserva Ecológica, arranha-céus, Ponte Transbordador. Desembarca em La Boca / Caminito.<br><br>
+<b>Pôr do Sol com Open Bar:</b><br>
+<span class="price">R$275/pessoa</span> (1h) &nbsp;|&nbsp; <span class="price">R$330/pessoa</span> (2h)<br>
+Quarta, Sexta e Sábado — embarque 17h, partida 18:00/18:15, retorno ~19h<br>
+Open bar de bebidas nacionais, refrigerantes e cerveja artesanal!<br>`,
+
+  tango_ba: `<h4>💃 Shows de Tango — Buenos Aires</h4>
+<b>🎭 Madero Tango (Porto Madero):</b><br>
+• Solo Show: <span class="price">R$305</span> (sem transfer) | VIP: <span class="price">R$390</span> (com transfer)<br>
+• Last Minute: <span class="price">R$305</span><br>
+• Cena Show Plateia: <span class="price">R$415</span><br>
+• Cena Show Executivo: <span class="price">R$485</span><br>
+• Cena Show Black: <span class="price">R$605</span><br>
+Todos incluem voucher de 30.000 pesos para Cassino.<br><br>
+<b>🎭 Tango Porteño:</b><br>
+• Solo Show: <span class="price">R$250</span> | Preferencial: <span class="price">R$315</span><br>
+• Cena Show Plateia: <span class="price">R$465</span><br>
+• Cena Show Executivo: <span class="price">R$490</span><br>
+• Cena Show VIP: <span class="price">R$570</span><br>
+Transfer compartilhado incluso (regiões centrais)<br><br>
+<b>🎭 Señor Tango (maior casa de espetáculos de BA):</b><br>
+• Solo Show: <span class="price">R$450</span> | Solo Show VIP: <span class="price">R$805</span><br>
+• Cena Show: <span class="price">R$630</span> | Cena Show VIP: <span class="price">R$1.250</span><br>
+Transfer opcional: R$115/pessoa<br><br>
+<b>🎭 Piazzolla Tango:</b><br>
+• Solo Show Plateia: <span class="price">R$450</span> | VIP: <span class="price">R$515</span><br>
+• Cena Show Plateia: <span class="price">R$450</span> | VIP: <span class="price">R$915</span><br>
+Transfer: R$90 (centro) ou R$100 (Palermo)<br>`,
+
+  parques_ba: `<h4>🎡 Parques e Atrações — Buenos Aires</h4>
+<b>Parque de La Costa (Tigre):</b><br>
+<span class="price">R$400/pessoa</span> — Sábado, Domingo e feriado — ~7h<br>
+Principal parque de diversões da Argentina. Inclui traslado ida/volta e passaporte.<br><br>
+<b>Bioparque Temaikén:</b><br>
+<span class="price">R$480</span> adulto &nbsp;|&nbsp; <span class="price">R$270</span> criança 3-10 anos — Todos os dias 10:00–18:00<br>
+Zoológico, aquário, museu de história natural, borboletário e setor dos morcegos! Inclui traslado e ingresso.<br><br>
+<b>Mundo Marino (maior parque marinho da América do Sul):</b><br>
+<span class="price">R$945</span> maiores de 10 anos &nbsp;|&nbsp; <span class="price">R$620</span> de 3 a 10 anos — Sábado, Domingo e feriado<br>
+Orcas, golfinhos, leões-marinhos, pinguins e aquário com tubarões! Inclui traslado e ingresso.<br><br>
+<b>Campanópolis (cidade medieval):</b><br>
+<span class="price">R$320/pessoa</span> — Qua–Sex saída 12h / Sáb saída 8h<br>
+Cidade-castelo em González Catán. Praça dos Templários, Salão do Graal, jardins místicos. Visita guiada 1h45.<br><br>
+<b>Campanópolis + Plaza Canning:</b><br>
+<span class="price">R$399/pessoa</span> — Qua–Sex saída 12h / Sáb saída 8h<br>`,
+
+  bodega_ba: `<h4>🍷 Experiências Gastronômicas — Bodega Gamboa</h4>
+<b>Experiência Gamboa:</b><br>
+<span class="price">R$750</span> adulto | <span class="price">R$435</span> (12-18 anos) | <span class="price">R$285</span> (3-12 anos)<br>
+Ter–Dom: 10:30–15:00 ou 12:00–16:30<br>
+Visita ao vinhedo, degustação de vinhos e cerveja artesanal da bodega, menu gastronômico.<br><br>
+<b>Imersão Gamboa (apenas adultos):</b><br>
+<span class="price">R$785/pessoa</span> — Ter–Dom: 12:00–15:00<br>
+Crie seu próprio blend! Tour pelo vinhedo, 3 degustações de vinho + cerveja especial. Menu "Terruño".<br>
+Transfer opcional: R$420 (ida e volta)<br><br>
+<b>Pizzaria do Bosquecito:</b><br>
+<span class="price">R$560</span> adulto | <span class="price">R$395</span> crianças 3-18 anos<br>
+Qua–Dom: 12:00–15:30<br>
+Visita guiada + degustação + pizza especial (massa 48h de fermentação, menu 3 etapas) com vinho.<br>`,
+
+  pagamento_ba: `<h4>💳 Dados de Pagamento — Buenos Aires</h4>
+<b>Chave PIX (CNPJ):</b> <code>61221696000170</code><br>
+<div class="info-row"><span class="ico">💰</span><span>Pagamento 100% à vista via PIX tem <strong>10% de desconto</strong></span></div>
+<b>Transferência Bancária:</b><br>
+Banco INTER (077) • Agência: 0001 • Conta: 45783527-3<br>
+CNPJ: 61.221.696/0001-70<br><br>
+<b>Cartão de Crédito:</b> Parcelamento em até <strong>10x sem juros</strong> — solicitar link de pagamento<br>`,
+
+  // --- RIO DE JANEIRO ---
+  rj_intro: `<h4>🏖️ Rio de Janeiro — Passeios Disponíveis</h4>
+<b>Traslados:</b> Santos Dumont e Galeão para Zona Sul e Zona Oeste<br><br>
+<b>City Tours:</b><br>
+<span class="tag">Um Dia no Rio (com ticket) R$500-550</span><span class="tag">Um Dia no Rio (sem ticket) R$220</span><span class="tag">Cristo + City Tour R$310</span><span class="tag">Rio Expresso R$475</span><span class="tag">Pão de Açúcar R$330</span><br><br>
+<b>Cultura:</b><br>
+<span class="tag">Boulevard Olímpico + Aquário R$320</span><span class="tag">Maracanã Experience R$320</span><span class="tag">Favela Tour Rocinha R$260</span><span class="tag">Rio Samba Bus R$200</span><span class="tag">Rio Histórico R$365</span><br><br>
+<b>Aventura:</b><br>
+<span class="tag">Voo de Helicóptero R$1.510</span><span class="tag">Voo de Parapente R$990</span><span class="tag">Pedra do Telégrafo R$270</span><span class="tag">Floresta da Tijuca R$325</span><br><br>
+<b>Excursões:</b><br>
+<span class="tag">Búzios Premium R$305</span><span class="tag">Arraial do Cabo R$305</span><span class="tag">Angra dos Reis R$300</span><span class="tag">Petrópolis R$245-280</span>`,
+
+  traslado_rj: `<h4>🚗 Traslados — Rio de Janeiro</h4>
+<div class="warning">⚠️ Carro para até 4 pessoas. Busca no aeroporto de chegada até a hospedagem.</div>
+<b>Santos Dumont → Zona Sul</b> (Ipanema, Leblon, Copacabana, Botafogo, Flamengo, Centro, São Conrado):<br>
+<span class="price">R$150</span> só ida &nbsp;|&nbsp; <span class="price">R$290</span> ida e volta<br><br>
+<b>Santos Dumont → Zona Oeste</b> (Barra da Tijuca, Recreio dos Bandeirantes):<br>
+<span class="price">R$180</span> só ida &nbsp;|&nbsp; <span class="price">R$350</span> ida e volta<br><br>
+<b>Galeão → Zona Sul</b>:<br>
+<span class="price">R$200</span> só ida &nbsp;|&nbsp; <span class="price">R$390</span> ida e volta<br><br>
+<b>Galeão → Zona Oeste</b>:<br>
+<span class="price">R$250</span> só ida &nbsp;|&nbsp; <span class="price">R$490</span> ida e volta<br>`,
+
+  um_dia_rio: `<h4>🗺️ Um Dia no Rio</h4>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 08:00 às 17:00</span></div>
+<b>Pontos:</b> Cristo Redentor, Pão de Açúcar, Catedral Metropolitana, Estádio Maracanã, Escadaria Selaron, Sambódromo, Arcos da Lapa, Floresta da Tijuca<br><br>
+<b>Com Ticket (ingressos inclusos):</b><br>
+<span class="price">R$500/pessoa</span> opção van &nbsp;|&nbsp; <span class="price">R$550/pessoa</span> opção trem<br>
+Inclui: guia bilíngue, ingressos Cristo e Pão de Açúcar, almoço<br>
+• Até 2 anos grátis; 3-4 anos só paga ingressos e vai no colo; 5-10 anos R$100 desconto; 11+ integral<br><br>
+<b>Sem Ticket:</b><br>
+<span class="price">R$220/pessoa</span><br>
+Inclui: guia bilíngue (ingressos a consultar, almoço por conta do cliente)<br>
+• Até 4 anos grátis; 5+ integral<br><br>
+<div class="warning">Busca no hotel: Ipanema, Copacabana, Leblon, Botafogo, Flamengo, Lapa. Barra de Tijuca com acréscimo de R$30.</div>`,
+
+  cristo_city: `<h4>✝️ Cristo + City Tour</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$310/pessoa</span> (apenas opção van)</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 08:00 às 14:00</span></div>
+<b>Pontos:</b> Cristo Redentor (ticket incluso), Catedral Metropolitana, Estádio Maracanã, Escadaria Selaron, Sambódromo, Arcos da Lapa, Floresta da Tijuca<br>
+Inclui: guia bilíngue + ingressos Cristo (almoço não incluso)<br>
+• Até 4 anos grátis; 5-10 anos R$50 desconto; 11+ integral<br>`,
+
+  rio_expresso: `<h4>⚡ Rio Expresso</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$475/pessoa</span> (apenas van)</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 08:00 às 13:00</span></div>
+Cristo Redentor + Pão de Açúcar — os dois cartões postais do RJ, com tickets inclusos!<br>
+Inclui: guia bilíngue + ingressos Cristo e Pão de Açúcar<br>
+• Até 2 anos grátis; 3-4 anos paga ingressos; 5-10 anos R$100 desconto<br>`,
+
+  pao_acucar: `<h4>🍞 Pão de Açúcar</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$330/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 15:00 às 17:00</span></div>
+Pão de Açúcar (ticket incluso) + Praia Vermelha<br>
+Inclui: guia bilíngue + ingresso<br>
+• Até 2 anos grátis; 3-4 paga meia; 5-10 anos R$100 desconto<br>`,
+
+  boulevard_aquario: `<h4>🐠 Boulevard Olímpico e Aquário</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$320/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 09:00 às 13:00</span></div>
+<b>Roteiro:</b> AquaRio Marinho (ticket incluso — maior aquário da América do Sul, 8 mil animais!), Espelho d'Água, Museu de Amanhã, Museu de Arte do Rio, Praça Mauá, Murais de Kobra, Boulevard Olímpico.<br>
+Opcional: Roda Gigante Yup Star por R$70 a mais.<br>
+• Até 2 anos grátis; 3-4 anos meia Aquário; 5+ integral<br>`,
+
+  maracana: `<h4>⚽ Maracanã Experience</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$320/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 14:00 às 18:00 (exceto dias de jogos)</span></div>
+Vestiário, Zona Mista, Calçada da Fama, área do gramado (lateral oeste). Itens de Pelé, uniforme de Garrincha na Copa de 1962.<br>
+Inclui: ingresso Maracanã + guia bilíngue<br>
+• Até 4 anos grátis; 5+ integral<br>`,
+
+  favela_tour: `<h4>🏘️ Favela Tour — Rocinha</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$260/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 14:00 às 17:00</span></div>
+Imersão cultural na maior comunidade do Brasil: Restaurante Mirante da Rocinha, Novo Visual, feira de artesanato, Igreja Nossa Senhora da Boa Viagem.<br>
+Inclui: guia de turismo + guia local<br>
+• 0-4 anos grátis; 5-10 anos meia; 11+ integral<br>`,
+
+  samba_bus: `<h4>🚌 Rio Samba Bus — Hop On/Off</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$200/pessoa</span> (ticket 24h)</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Todos os dias exceto terça. Duração 2h10 (seguindo todo o trajeto)</span></div>
++30 pontos turísticos da Zona Sul e Centro. Embarque em Copacabana. Audioguia trilíngue, bar a bordo, Wi-Fi gratuito.<br>
+Inclui: audioguia + hop-on/off em ônibus panorâmico<br>
+• Até 5 anos grátis; 6-12 anos meia; 13+ integral<br>`,
+
+  rio_historico: `<h4>🏛️ Rio Histórico</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$365/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 09:00 às 13:00</span></div>
+Praça XV, Arcos dos Teles, CCBB, Paço Imperial, Candelária, Av. Rio Branco, Cinelândia, Teatro Municipal, Biblioteca Nacional, Arcos da Lapa, Escadaria Selaron, Mosteiro de São Bento, Confeitaria Colombo, Casa França Brasil, Museu de Belas Artes.<br>
+Inclui: guia de turismo<br>`,
+
+  helicoptero: `<h4>🚁 Voo de Helicóptero — Rio de Janeiro</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$1.510/pessoa</span> compartilhado &nbsp;|&nbsp; <span class="price">R$3.000</span> privado (até 3 pax)</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 09:00 às 17h30</span></div>
+<b>Sobrevoo 25-30 minutos</b> sobre: Barra da Tijuca, Joatinga, Pedra da Gávea, São Conrado, Rocinha, Vidigal, Morro Dois Irmãos, Leblon, Ipanema, Copacabana, Pão de Açúcar, Lagoa Rodrigo de Freitas, Cristo Redentor, Floresta da Tijuca.<br>
+Inclui: guia bilíngue + piloto certificado + seguro<br>
+<div class="warning">⚠️ Agendamento com antecedência. Limite de peso: 120kg/assento. Voo privativo cobrado valor de 3 Pax. 1 passageiro depende de horário disponível.</div>
+• Até 2 anos grátis; 3+ integral<br>`,
+
+  parapente: `<h4>🪂 Voo de Parapente — Rio de Janeiro</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$990/pessoa</span> (a partir de 11 anos)</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 09:00 às 13:00</span></div>
+Voo de 15-20 minutos (condicional) partindo da Pedra Bonita. Sobrevoando: Praia de Charitas, Baía de Guanabara, Cristo Redentor, Pão de Açúcar.<br>
+Inclui: guia bilíngue + fotos profissionais + vídeo em alta resolução + equipamentos novos + instrutores certificados (CBVL, ANAC, FAI, COVL) + seguro<br>
+<div class="warning">⚠️ Passeio condicional — depende das condições do vento.</div>`,
+
+  pedra_telegrafo: `<h4>🧗 Pedra do Telégrafo</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$270/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 06:00 às 12:00</span></div>
+A trilha mais famosa do RJ! Parque Estadual da Pedra Branca em Barra de Guaratiba. A famosa pedra para fotos "de tirar o fôlego" chama-se Pedra da Bigorna. No retorno: praias da Barra da Tijuca e praias secretas.<br>
+Inclui: guia turístico<br>
+• 0-4 anos grátis; 5-10 anos meia; 11+ integral<br>`,
+
+  floresta_tijuca: `<h4>🌿 Floresta da Tijuca</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$325/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 09:00 às 13:00</span></div>
+Uma das maiores florestas urbanas do mundo. Roteiro: Centro de Visitantes, Cascatinha Taunay (maior cachoeira), trilha de ~1km, Mirante da Cascatinha, Capela Mayrink, Parque Lage (opcional).<br>
+Inclui: guia bilíngue<br>
+• 0-4 anos grátis; 5+ integral<br>`,
+
+  buzios: `<h4>🏝️ Búzios Premium</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$305/pessoa</span> com barco &nbsp;|&nbsp; <span class="price">R$280/pessoa</span> sem barco</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 07:00 às 21:00</span></div>
+14 praias! 3 paradas para banho (40 min cada). Almoço buffet livre no Restaurante Chamas Grill. Ilhas Rasa, Feia e Branca, Praia da Tartaruga, João Fernandes e muito mais.<br>
+Inclui: passeio de barco + guia bilíngue + almoço buffet livre<br>
+Busca: Barra de Tijuca, Ipanema, Copacabana, Leblon. Ponto de encontro: Botafogo, Flamengo, Lapa.<br>`,
+
+  arraial: `<h4>⚓ Arraial do Cabo</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$305/pessoa</span> com barco &nbsp;|&nbsp; <span class="price">R$280/pessoa</span> sem barco</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 07:00 às 21:00</span></div>
+Fenda de Nossa Senhora, Prainhas do Atalaia, Ilha do Farol, Gruta Azul, Praia do Forno, Praia dos Anjos. Almoço buffet livre no Restaurante Deck dos Anjos. 3 paradas para banho.<br>
+<div class="warning">⚠️ A Marinha do Brasil avalia as condições de navegação diariamente. Caso não autorizada, será feito passeio alternativo terrestre.</div>`,
+
+  angra: `<h4>🏝️ Angra dos Reis e Ilha Grande</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$300/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 07:00 às 21:00</span></div>
+Passeio de barco pelas paisagens de Angra dos Reis e Ilha Grande. Paradas: Lagoa Azul, Ilha de Cataguases, Fegresia de Santana, Japariz. Almoço buffet livre no Restaurante de Hélio.<br>
+Inclui: passeio de barco + guia bilíngue + almoço buffet<br>`,
+
+  petropolis: `<h4>👑 Petrópolis Imperial</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$245/pessoa</span> &nbsp;|&nbsp; <span class="price">R$280/pessoa</span> full day (com almoço buffet)</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Terça a Domingo — 08:00 às 19:00</span></div>
+Museu Imperial (ticket incluso!), Casa de Santos Dumont, Palácio de Cristal, Cátedral, Palácio de Quitandinha, Fábrica de chocolates Katz, Rua Teresa. Full day inclui almoço buffet no Restaurante Copacabana Grill.<br>
+• Até 4 anos grátis; 5-10 anos meia; 11+ integral<br>`,
+
+  pagamento_rj: `<h4>💳 Dados de Pagamento — Rio de Janeiro</h4>
+<div class="warning">Pagamento para serviços do RJ — mesmo CNPJ que Buenos Aires.</div>
+<b>Chave PIX (CNPJ):</b> <code>61221696000170</code><br>
+<div class="info-row"><span class="ico">💰</span><span>Pagamento 100% à vista via PIX tem <strong>10% de desconto</strong></span></div>
+<b>Transferência Bancária:</b><br>
+Banco INTER (077) • Agência: 0001 • Conta: 45783527-3<br>
+CNPJ: 61.221.696/0001-70<br><br>
+<b>Cartão de Crédito:</b> Parcelamento em até <strong>12x sem juros</strong> — solicitar link de pagamento<br>`,
+
+};
+
+// ============================================================
+// AI ENGINE
+// ============================================================
+function norm(t) {
+  return t.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function has(txt, ...words) {
+  return words.some(w => txt.includes(w));
+}
+
+function findAnswer(rawQuery) {
+  const q = norm(rawQuery);
+
+  // Saudações
+  if (has(q, 'ola', 'oi ', 'bom dia', 'boa tarde', 'boa noite', 'oi!'))
+    return `Olá! 😊 Como posso te ajudar? Pergunte sobre qualquer passeio ou serviço da Rota 98 Tour em <strong>Bariloche</strong>, <strong>Buenos Aires</strong> ou <strong>Rio de Janeiro</strong>!`;
+
+  // Pagamentos
+  if (has(q, 'pagamento', 'pix', 'parcelar', 'parcelas', 'parcelamento', 'desconto', 'cartao', 'transferencia', 'conta bancaria', 'dados bancarios')) {
+    if (has(q, 'bariloche', 'argentina') && !has(q, 'buenos')) return KB.pagamento_bariloche;
+    if (has(q, 'buenos', 'argentina')) return KB.pagamento_ba;
+    if (has(q, 'rio', 'rj', 'carioca')) return KB.pagamento_rj;
+    return KB.pagamento_bariloche + '<br><hr style="margin:10px 0; border-color:#eee"><br>' + KB.pagamento_ba;
+  }
+
+  // BARILOCHE — intro
+  if ((has(q, 'bariloche') && has(q, 'passeio', 'tour', 'excursao', 'servico', 'produto', 'tem', 'lista', 'quais', 'disponiveis')) || q === 'bariloche')
+    return KB.bariloche_intro;
+
+  // BUENOS AIRES — intro
+  if ((has(q, 'buenos', 'argentina', 'buenos aires') && has(q, 'passeio', 'tour', 'excursao', 'servico', 'produto', 'tem', 'lista', 'quais')) || q === 'buenos aires')
+    return KB.buenosaires_intro;
+
+  // RIO DE JANEIRO — intro
+  if ((has(q, 'rio', 'rj', 'janeiro', 'carioca') && has(q, 'passeio', 'tour', 'excursao', 'servico', 'produto', 'tem', 'lista', 'quais')) || q === 'rio de janeiro')
+    return KB.rj_intro;
+
+  // TRASLADOS
+  if (has(q, 'traslado', 'transfer', 'aeroporto', 'buscar', 'busca', 'hospedagem')) {
+    if (has(q, 'bariloche')) return KB.bariloche_intro.split('<b>Passeios')[0] + `<h4>🚗 Traslados — Bariloche</h4><div class="info-row"><span class="ico">💰</span><span><span class="price">R$180,00</span> só ida &nbsp;|&nbsp; <span class="price">R$350,00</span> ida e volta</span></div><div class="info-row"><span class="ico">🚌</span><span>Valores por carro para hotéis centrais. Madrugada: adicional R$65. Tolerância de 60 min após aterrissagem.</span></div><div class="warning">⚠️ Grupos de 4 pessoas: informar quantidade de malas antes de fechar o transfer. Pagamento 100% à vista via PIX tem 10% de desconto.</div>`;
+    if (has(q, 'buenos', 'argentina')) return KB.traslado_ba;
+    if (has(q, 'rio', 'rj', 'janeiro')) return KB.traslado_rj;
+    return KB.traslado_ba + '<br><hr style="margin:10px 0; border-color:#eee"><br>' + KB.traslado_rj;
+  }
+
+  // BARILOCHE — passeios específicos
+  if (has(q, 'circuito chico', 'chico', 'campanario', 'llao llao', 'bahia lopez'))
+    return KB.circuito_chico;
+  if (has(q, 'cerro catedral', 'catedral', 'esqui', 'ski'))
+    return KB.cerro_catedral;
+  if (has(q, '7 lagos', 'sete lagos', 'san martin', 'lago lacar', 'villa la angostura') && has(q, 'bariloche', '7 lagos', 'sete', 'lago'))
+    return KB.sete_lagos;
+  if (has(q, 'tronador', 'ventisquero negro', 'glaciar'))
+    return KB.tronador;
+  if (has(q, 'bolson', 'lago puelo', 'el bolson'))
+    return KB.bolson;
+  if (has(q, 'isla victoria', 'victoria', 'arrayanes'))
+    return KB.isla_victoria;
+  if (has(q, 'puerto blest', 'blest', 'cantaros', 'lago frias'))
+    return KB.puerto_blest;
+  if (has(q, 'snowcat', 'snow cat', 'toyota neve', 'culipatins') && !has(q, 'nieve al'))
+    return KB.snowcat;
+  if (has(q, 'nieve al limite', 'nieve limite', 'brincar na neve'))
+    return KB.nieve_al_limite;
+  if (has(q, 'inverno', 'winter', 'neve') && has(q, 'bariloche'))
+    return `<h4>❄️ Passeios de Inverno — Bariloche</h4>Bariloche tem passeios de inverno incríveis! Confira as opções:<br><br>` + KB.snowcat + '<br>' + KB.nieve_al_limite;
+  if (has(q, 'rafting') && has(q, 'chile', 'fronteira'))
+    return KB.rafting_chile;
+  if (has(q, 'rafting') && has(q, 'villegas'))
+    return KB.rafting_villegas;
+  if (has(q, 'rafting', 'rio manso'))
+    return `<h4>🌊 Rafting Rio Manso — Escolha a opção:</h4><br>` + KB.rafting_chile + '<br>' + KB.rafting_villegas;
+  if (has(q, 'kayak', 'caiaque', 'gutierrez', 'remo'))
+    return KB.kayak;
+  if (has(q, 'veleiro', 'barco a vela', 'vela') && has(q, 'bariloche', 'vela', 'veleiro', 'petunia'))
+    return KB.vela;
+  if (has(q, 'cavalgada', 'cavalo', 'horse', 'lago moreno', 'campanario') && has(q, 'bariloche', 'cavalgada', 'cavalo'))
+    return KB.cavalgada;
+  if (has(q, 'canopy', 'tirolesa', 'zip line'))
+    return KB.canopy;
+  if (has(q, 'circuito grande', 'vale encantado', 'dedo de deus', 'villa traful'))
+    return KB.circuito_grande;
+  if (has(q, 'buceo', 'mergulho', 'bautismo de buceo'))
+    return KB.buceo;
+
+  // BUENOS AIRES — passeios específicos
+  if (has(q, 'kit boas vindas', 'kit boasvindas', 'boas vindas', 'chip', 'sube', 'adaptador'))
+    return KB.kit_boas_vindas;
+  if (has(q, 'city tour') && has(q, 'buenos', 'argentina', 'ba'))
+    return KB.citytour_ba;
+  if (has(q, 'city tour') && !has(q, 'rio', 'bariloche'))
+    return KB.citytour_ba;
+  if (has(q, 'estadio', 'boca', 'river plate', 'bombonera', 'boca juniors', 'futebol') && has(q, 'buenos', 'argentina', 'ba', 'boca', 'river'))
+    return KB.estadios_ba;
+  if (has(q, 'tigre', 'delta', 'parana', 'catamaras') && has(q, 'buenos', 'argentina', 'tigre'))
+    return KB.tigre_ba;
+  if (has(q, 'posta', 'postais', 'rio de la plata', 'navegacao', 'por do sol', 'open bar') && has(q, 'buenos', 'ba', 'argentina'))
+    return KB.navegacao_ba;
+  if (has(q, 'tango', 'show de tango', 'madero tango', 'tango porteno', 'senor tango', 'piazzolla'))
+    return KB.tango_ba;
+  if (has(q, 'parque de la costa', 'temaiken', 'mundo marino', 'campanopolis', 'parque') && has(q, 'buenos', 'argentina', 'ba'))
+    return KB.parques_ba;
+  if (has(q, 'bodega', 'vinho', 'gamboa', 'vinhedos', 'pizza', 'gastronomia') && has(q, 'buenos', 'argentina', 'ba'))
+    return KB.bodega_ba;
+  if (has(q, 'onibus turistico', 'hop on', 'hop off', 'bus turistico') && has(q, 'buenos', 'argentina'))
+    return `<h4>🚌 Ônibus Turístico — Buenos Aires (Hop On/Off)</h4><div class="info-row"><span class="ico">💰</span><span>24h: <span class="price">R$320</span> adulto / <span class="price">R$205</span> criança 4-11 anos</span></div><div class="info-row"><span class="ico">💰</span><span>48h: <span class="price">R$385</span> adulto / <span class="price">R$250</span> criança</span></div><div class="info-row"><span class="ico">💰</span><span>72h: <span class="price">R$415</span> adulto / <span class="price">R$265</span> criança</span></div><div class="info-row"><span class="ico">🕐</span><span>09:00 às 17:00 a cada 30 min. Audioguia em 9 idiomas.</span></div>`;
+
+  // RIO DE JANEIRO — passeios específicos
+  if (has(q, 'um dia no rio', 'dia no rio') && !has(q, 'sem ticket') && !has(q, 'sin ticket'))
+    return KB.um_dia_rio;
+  if ((has(q, 'cristo', 'redentor')) && has(q, 'city tour'))
+    return KB.cristo_city;
+  if (has(q, 'rio expresso'))
+    return KB.rio_expresso;
+  if (has(q, 'pao de acucar', 'pao acucar', 'bondinho'))
+    return KB.pao_acucar;
+  if (has(q, 'boulevard olimpico', 'aquario', 'aquario marinho', 'aquario do rio'))
+    return KB.boulevard_aquario;
+  if (has(q, 'maracana', 'estadio maracana'))
+    return KB.maracana;
+  if (has(q, 'favela', 'rocinha'))
+    return KB.favela_tour;
+  if (has(q, 'samba bus', 'hop on', 'hop off') && has(q, 'rio', 'rj'))
+    return KB.samba_bus;
+  if (has(q, 'rio historico', 'historico', 'candelaria', 'praca xv', 'confeitaria colombo'))
+    return KB.rio_historico;
+  if (has(q, 'helicoptero', 'helicóptero', 'voo helicoptero', 'sobrevoo'))
+    return KB.helicoptero;
+  if (has(q, 'parapente', 'asa delta', 'pedra bonita'))
+    return KB.parapente;
+  if (has(q, 'pedra telegrafo', 'telegrafo', 'pedra bigorna'))
+    return KB.pedra_telegrafo;
+  if (has(q, 'floresta da tijuca', 'tijuca', 'cascatinha'))
+    return KB.floresta_tijuca;
+  if (has(q, 'buzios', 'praia de buzios', 'joao fernandes'))
+    return KB.buzios;
+  if (has(q, 'arraial', 'arraial do cabo', 'gruta azul'))
+    return KB.arraial;
+  if (has(q, 'angra', 'ilha grande', 'angra dos reis'))
+    return KB.angra;
+  if (has(q, 'petropolis', 'museu imperial', 'quitandinha', 'santos dumont') && !has(q, 'aeroporto'))
+    return KB.petropolis;
+
+  // Passeios de barco genérico
+  if (has(q, 'passeio de barco', 'barco', 'nautico', 'navegacao') && !has(q, 'buenos', 'ba')) {
+    if (has(q, 'bariloche')) return KB.isla_victoria + '<br>' + KB.puerto_blest;
+    return KB.buzios + '<br>' + KB.arraial + '<br>' + KB.angra;
+  }
+
+  // Passeios de aventura
+  if (has(q, 'aventura', 'adrenalina', 'radical'))
+    return `<h4>🎯 Passeios de Aventura disponíveis:</h4><br>` + `<b>Bariloche:</b> Rafting (R$600-810), Kayak (R$490), Canopy (R$440), Barco à Vela (R$610), Snowcat (R$1.460) ❄️<br><br><b>Rio de Janeiro:</b> Voo de Helicóptero (R$1.510), Parapente (R$990), Pedra do Telégrafo (R$270), Floresta da Tijuca (R$325)`;
+
+  // Passeios para crianças
+  if (has(q, 'crianca', 'kids', 'bebe', 'menor', 'familia', 'meia entrada'))
+    return `<h4>👨‍👩‍👧 Passeios para Famílias com Crianças:</h4>
+<b>🏔️ Bariloche:</b> Rafting Villegas (a partir 5 anos), Circuito Chico, Isla Victoria, Circuito Grande<br><br>
+<b>🌆 Buenos Aires:</b> Bioparque Temaikén (R$270/criança 3-10), Mundo Marino (R$620/criança 3-10), Parque de La Costa, Tigre Delta, Ônibus Turístico (R$205/criança)<br><br>
+<b>🏖️ Rio de Janeiro:</b> Um Dia no Rio (até 2 anos grátis), Rio Samba Bus (até 5 anos grátis), Búzios, Arraial, Angra, Petrópolis`;
+
+  // Colônia
+  if (has(q, 'colonia', 'colonia del sacramento', 'bate e volta'))
+    return `<h4>⛴️ Bate e Volta Colônia</h4>Use o botão <strong>"Promoção Bate e Volta Colônia"</strong> no topo para ver todas as informações, horários, opções e como verificar disponibilidade.<br><br>
+<div class="warning">⚠️ OBRIGATÓRIO verificar disponibilidade em <a href="https://www.coloniaexpress.com/ar" target="_blank">coloniaexpress.com/ar</a> antes de confirmar qualquer venda!</div>`;
+
+  // Contrato
+  if (has(q, 'contrato', 'cancelamento', 'politica', 'termos'))
+    return `<h4>📋 Envio do Contrato</h4>Use o botão <strong>"Envio Obrigatório do Contrato"</strong> no topo para ver o procedimento completo. Resumo:<br><br><div class="step">1️⃣ Enviar o contrato ao cliente</div><div class="step">2️⃣ Informar que pagamento = aceite dos termos</div><div class="step">3️⃣ Enviar chave PIX ou link de pagamento</div><div class="success">✅ Não precisa aguardar confirmação — válido para todos os destinos.</div>`;
+
+  // Credenciais
+  if (has(q, 'credenciais', 'cadastur', 'rnav', 'regularizada', 'cadastrada', 'legalizada', 'confianca', 'seguranca', 'oficial'))
+    return `<h4>🏅 Credenciais Rota 98 Tour</h4>Use o botão <strong>"Credenciais Rota 98"</strong> no topo para ver os detalhes completos.<br><br>🇧🇷 <strong>Cadastur</strong>: CNPJ 61.221.696/0001-70<br>🇦🇷 <strong>RNAV Argentina</strong>: Legajo Nº 19491<br><br><div class="success">Somos regularizados nos órgãos competentes de turismo nos dois países. Envie a imagem de credenciais quando o cliente estiver inseguro!</div>`;
+
+  // Formulário
+  if (has(q, 'formulario', 'cadastro', 'jotform', 'cadastrar cliente'))
+    return `<h4>📝 Formulário de Cadastro</h4>Envie para todos os clientes que fecharem vendas:<br><br><a href="https://form.jotform.com/241818239323659" target="_blank" class="link-btn">🔗 Acessar Formulário JotForm</a>`;
+
+  // Calculadora
+  if (has(q, 'calculadora', 'parcelado', 'calcular', 'parcela'))
+    return `<h4>💳 Calculadora de Cartão</h4>Use a planilha para calcular valores parcelados:<br><br><a href="https://docs.google.com/spreadsheets/d/1jeT1vso_KpaoEm7zoiHD8nmDYtYuJJCKCE7Xw9TJV8s/edit" target="_blank" class="link-btn gold">📊 Abrir Calculadora</a>`;
+
+  // Perguntas gerais de preço
+  if (has(q, 'mais barato', 'menor preco', 'mais em conta', 'economico'))
+    return `<h4>💡 Passeios mais acessíveis por destino:</h4>
+<b>🏔️ Bariloche:</b> Circuito Chico (R$230), Cerro Catedral (R$235)<br>
+<b>🌆 Buenos Aires:</b> City Tour 12 Pontos (R$135/pessoa), Navegação Postais (R$155/só ida)<br>
+<b>🏖️ Rio de Janeiro:</b> Um Dia no Rio sem ticket (R$220), Rio Samba Bus (R$200)`;
+
+  // Experiências premium
+  if (has(q, 'premium', 'vip', 'luxo', 'melhor', 'mais completo'))
+    return `<h4>⭐ Experiências Premium Rota 98:</h4>
+<b>Bariloche:</b> Snowcat Patagonia (R$1.460), Cavalgada La Fragua (R$925)<br>
+<b>Buenos Aires:</b> City Tour Full Day com Fotos (R$1.250/carro), Señor Tango VIP (R$1.250), Bodega Gamboa Imersão (R$785)<br>
+<b>Rio de Janeiro:</b> Voo de Helicóptero (R$1.510-3.000), Voo de Parapente (R$990)`;
+
+  // Default
+  return `Desculpe, não encontrei uma resposta específica para sua pergunta. 🤔<br><br>
+Posso te ajudar com informações sobre:<br>
+• <strong>Bariloche</strong> — passeios terrestres, barco, inverno e verão<br>
+• <strong>Buenos Aires</strong> — city tours, tango, parques, gastronomia<br>
+• <strong>Rio de Janeiro</strong> — city tours, aventura, excursões<br>
+• <strong>Traslados e pagamentos</strong> em todos os destinos<br><br>
+Tente perguntar de forma mais específica, como: <em>"Quanto custa o Circuito Chico?"</em> ou <em>"O que está incluso no tour de Buenos Aires?"</em>`;
+}
+
+// ============================================================
+// CHAT FUNCTIONS
+// ============================================================
+function getTime() {
+  return new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+}
+
+function addMessage(text, isUser) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `msg ${isUser ? 'user' : 'bot'}`;
+  div.innerHTML = `<div class="bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.id = 'typing-indicator';
+  div.innerHTML = `<div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMessage(text, true);
+  showTyping();
+  setTimeout(() => {
+    removeTyping();
+    const answer = findAnswer(text);
+    addMessage(answer, false);
+  }, 600 + Math.random() * 400);
+}
+
+function askQuestion(q) {
+  document.getElementById('chatInput').value = q;
+  sendMessage();
+}
+
+// MODALS
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target===m) closeModal(m.id); });
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
+});
+</script>
+</body>
+</html>
