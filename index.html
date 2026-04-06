@@ -457,98 +457,179 @@ const KB = {
 
   // --- BARILOCHE ---
   bariloche_intro: `<h4>🏔️ Bariloche — Passeios Disponíveis</h4>
-<b>Traslados:</b> R$180 (só ida) / R$350 (ida e volta) — valor por carro, hotéis centrais<br><br>
-<b>Passeios Terrestres:</b><br>
-<span class="tag">Circuito Chico R$230</span><span class="tag">Cerro Catedral R$235</span><span class="tag">7 Lagos R$510</span><span class="tag">Cerro Tronador R$480</span><span class="tag">Bolsón/Lago Puelo R$465</span><span class="tag">Circuito Grande R$490</span><br><br>
-<b>Passeios de Barco:</b><br>
-<span class="tag">Isla Victoria + Arrayanes R$655</span><span class="tag">Puerto Blest R$685</span><br><br>
-<b>Passeios de Inverno ❄️:</b><br>
-<span class="tag">Snowcat Patagonia R$1.460</span><span class="tag">Nieve al Limite R$960</span><br><br>
-<b>Passeios de Verão ☀️:</b><br>
-<span class="tag">Rafting Rio Manso R$810</span><span class="tag">Rafting Villegas R$600</span><span class="tag">Kayak R$490</span><span class="tag">Barco à Vela R$610</span><span class="tag">Cavalgada Lago Moreno R$400</span><span class="tag">Cavalgada Campanário R$345</span><span class="tag">Cavalgada La Fragua R$925</span><span class="tag">Canopy R$440</span><span class="tag">Buceo R$460</span><br><br>
-Pergunte sobre qualquer passeio específico para mais detalhes!`,
+<b>Traslados (hotéis centrais):</b> <span class="price">R$180</span> só ida / <span class="price">R$350</span> ida e volta — valor por carro<br><br>
+<b>☀️❄️ Passeios Terrestres (Verão e Inverno):</b><br>
+<span class="tag">Circuito Chico R$230 • 08:30 ou 14:30</span><span class="tag">Cerro Catedral R$235 • 13:00</span><span class="tag">7 Lagos R$510 • dia inteiro</span><span class="tag">Cerro Tronador R$480 • 09:00</span><span class="tag">Bolsón/Lago Puelo R$465 • Qui/Sáb</span><span class="tag">Circuito Grande R$490 • Seg/Qua/Sex</span><br><br>
+<b>☀️❄️ Passeios de Barco (Verão e Inverno):</b><br>
+<span class="tag">Isla Victoria + Arrayanes R$655 (adulto) / R$355 (criança 5-12)</span><span class="tag">Puerto Blest + Cántaros R$685 (adulto) / R$370 (criança 5-12)</span><br><br>
+<b>❄️ Exclusivos de Inverno (junho a setembro):</b><br>
+<span class="tag">Snowcat Patagonia R$1.460 (adulto) / R$1.270 (criança 4-12)</span><span class="tag">Nieve al Limite R$960 • 10:00</span><br><br>
+<b>☀️ Exclusivos de Verão (novembro a março):</b><br>
+<span class="tag">Rafting Rio Manso (Chile) R$810 • +14 anos</span><span class="tag">Rafting Villegas R$600 • a partir 5 anos</span><span class="tag">Kayak Lago Gutiérrez R$490</span><span class="tag">Barco à Vela R$610 • 3h</span><span class="tag">Cavalgada Lago Moreno R$400 • 3h</span><span class="tag">Cavalgada Campanário R$345 • 1h30</span><span class="tag">Cavalgada La Fragua R$925 (c/ almoço)</span><span class="tag">Canopy 1.500m R$440</span><span class="tag">Bautismo de Buceo R$460</span><br><br>
+Pergunte sobre qualquer passeio para ver preços, horários, o que inclui e observações importantes!`,
+
+  traslado_bari: `<h4>🚗 Traslados — Bariloche (Hotéis Centrais)</h4>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 180,00</span> só ida &nbsp;|&nbsp; <span class="price">R$ 350,00</span> ida e volta</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<div class="warning">⚠️ <b>ATENÇÃO — OBSERVAÇÕES IMPORTANTES:</b><br>
+• Valores por <strong>carro</strong>, não por pessoa<br>
+• Percurso de madrugada tem adicional de <strong>R$65,00</strong><br>
+• Tolerância de <strong>60 minutos</strong> de espera após aterrissagem. Se demorar mais, cobra-se <strong>R$65 a cada 30 min</strong> extra<br>
+• Grupo de 4 pessoas: informar quantidade de malas antes de fechar. Se não caber no carro comum, solicite veículo extra</div>
+<br><b>Pagamento:</b> 100% à vista via PIX ou PicPay tem <strong>10% de desconto</strong>`,
 
   circuito_chico: `<h4>🗺️ Circuito Chico — A Apresentação de Bariloche</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 230,00</span> por pessoa</span></div>
-<div class="info-row"><span class="ico">🕐</span><span>08:30 às 12:30 <em>ou</em> 14:30 às 18:30</span></div>
-<div class="info-row"><span class="ico">☀️❄️</span><span>Verão e Inverno</span></div>
-<b>Descrição:</b> Bahía López, Punto Panorámico, cadeira aérea do Cerro Campanario (não inclusa), Puerto Pañuelo, Hotel Llao Llao, Capela San Eduardo.<br><br>
+<div class="info-row"><span class="ico">🕐</span><span><b>Manhã:</b> 08:30 às 12:30 &nbsp;|&nbsp; <b>Tarde:</b> 14:30 às 18:30</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<b>Descrição:</b> Passeio imperdível com experiência visual única pela beleza natural de Bariloche. O roteiro percorre os pontos mais icônicos da região:<br>
+• <b>Bahía López</b> — baía de beleza singular com vistas de montanhas<br>
+• <b>Punto Panorámico</b> — vista deslumbrante de 360° sobre os lagos<br>
+• <b>Cerro Campanario</b> — cadeira aérea que proporciona a vista mais impressionante da região (teleférico NÃO incluído, consultar valor)<br>
+• <b>Puerto Pañuelo</b> — porto histórico às margens do Nahuel Huapi<br>
+• <b>Hotel Llao Llao</b> — ícone arquitetônico da Patagônia<br>
+• <b>Capela San Eduardo</b> — capelinha histórica em cenário de cartão postal<br><br>
 <span class="tag green">✅ INCLUSO</span><br>
-• Traslado no hotel até km 8<br>
-• Guia inglês/espanhol<br><br>
+• Traslado no hotel ou ponto de encontro até km 8<br>
+• Guia em inglês/espanhol<br><br>
 <span class="tag red">❌ NÃO INCLUSO</span><br>
-• Alimentação, despesas pessoais<br>
-• Teleférico ao Cerro Campanário (consultar valor)<br><br>
+• Alimentação e despesas pessoais<br>
+• Teleférico ao Cerro Campanário (consultar valor com executivo de vendas)<br><br>
 <div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
-  cerro_catedral: `<h4>🎿 Cerro Catedral</h4>
+  cerro_catedral: `<h4>🎿 Cerro Catedral — Maior Centro de Esqui do Hemisfério Sul</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 235,00</span> por pessoa</span></div>
-<div class="info-row"><span class="ico">🕐</span><span>13:00 às 17:00</span></div>
-<div class="info-row"><span class="ico">☀️❄️</span><span>Verão e Inverno</span></div>
-<b>Descrição:</b> Maior centro de esqui do hemisfério sul! Trajeto de 40 min até Villa Catedral. Vistas do Cerro Tronador e vulcão Puntiagudo. Teleférico opcional. Esqui alpino, snowboard, mountain bike e caminhadas.<br><br>
+<div class="info-row"><span class="ico">🕐</span><span>13:00 às 17:00 (retorno às 17h)</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<b>Descrição:</b> Trajeto de cerca de <b>40 minutos</b> de Bariloche até Villa Catedral, aos pés do Cerro Catedral. Após a chegada, <b>4 horas livres</b> para explorar a região:<br>
+• Picos imponentes com <b>vistas espetaculares</b> das montanhas, do <b>lago Gutiérrez</b>, do Cerro Tronador e do vulcão Puntiagudo<br>
+• Teleférico opcional (entrada NÃO incluída) — sobe ainda mais alto para panorâmicas impressionantes<br>
+• Ideal para: <b>esqui alpino, snowboard</b> (inverno) • <b>caminhadas e mountain bike</b> (verão)<br><br>
 <span class="tag green">✅ INCLUSO</span><br>
-• Traslado no hotel até km 8 • Guia inglês/espanhol<br><br>
+• Traslado no hotel ou ponto de encontro até km 8<br>
+• Guia em inglês/espanhol<br><br>
 <span class="tag red">❌ NÃO INCLUSO</span><br>
-• Alimentação, despesas pessoais, equipamento de esqui, roupas de neve, meios de elevação (consultar)<br><br>
-<div class="warning">Sujeito a alterações climáticas.</div>`,
+• Alimentação e despesas pessoais<br>
+• Equipamento de esqui e roupas de neve<br>
+• Meios de elevação e teleférico (consultar valor)<br><br>
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   sete_lagos: `<h4>🏞️ 7 Lagos — San Martín de los Andes</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 510,00</span> por pessoa</span></div>
-<div class="info-row"><span class="ico">🕐</span><span>08:00 às 18:00</span></div>
-<div class="info-row"><span class="ico">☀️❄️</span><span>Verão e Inverno</span></div>
-<b>Descrição:</b> Rota pelos 7 lagos glaciares da Patagônia. Lagos Correntoso, Espejo, Bailey Willis, Escondido, Villarino, Falkner e Machónico. Parada em Villa La Angostura e tempo livre em San Martín de los Andes para almoço e artesanato.<br><br>
-<span class="tag green">✅ INCLUSO</span> Traslado hotel até km 8 • Guia inglês/espanhol<br>
+<div class="info-row"><span class="ico">🕐</span><span>08:00 às 18:00 (dia inteiro)</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<b>Descrição:</b> Itinerário espetacular que atravessa a região dos <b>sete lagos glaciares da Patagônia</b>, saindo de Bariloche pela <b>Rodovia Nacional 237</b> até San Martín de los Andes às margens do <b>lago Lácar</b>.<br><br>
+<b>Os 7 Lagos percorridos:</b><br>
+🔵 Correntoso &nbsp;🔵 Espejo &nbsp;🔵 Bailey Willis &nbsp;🔵 Escondido &nbsp;🔵 Villarino &nbsp;🔵 Falkner &nbsp;🔵 Machónico<br><br>
+<b>Destaques do roteiro:</b><br>
+• <b>Villa La Angostura</b> — parada na charmosa vila de cenário florestal exuberante<br>
+• <b>Cascata de Vuliñanco</b> — queda d'água imperdível no caminho<br>
+• <b>San Martín de los Andes</b> — tempo livre para almoço e explorar bancas de artesanato<br>
+• Chegada de volta a Bariloche prevista para as <b>18:00h</b><br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado hotel até km 8 • Guia em inglês/espanhol<br>
 <span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br>
-<div class="warning">Sujeito a alterações climáticas.</div>`,
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   tronador: `<h4>🌋 Cerro Tronador e Ventisquero Negro</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 480,00</span> por pessoa</span></div>
-<div class="info-row"><span class="ico">🕐</span><span>09:00 às 18:00</span></div>
-<b>Descrição:</b> Rumo ao vulcão Cerro Tronador passando pelos lagos Gutiérrez e Mascardi. Pampa Argentino, ponte sobre o rio Manso, acampamento Los Rápidos e Pampa Linda. Glaciar Ventisquero Negro com cachoeiras impressionantes.<br><br>
-<span class="tag green">✅ INCLUSO</span> Traslado hotel até km 8 • Guia inglês/espanhol<br>
-<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingresso ao Parque Nacional (consultar)<br>`,
+<div class="info-row"><span class="ico">🕐</span><span>09:00 às 18:00 (~9 horas de viagem)</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<b>Descrição:</b> Jornada inesquecível rumo ao <b>vulcão Cerro Tronador</b>, percorrendo paisagens cinematográficas da Patagônia:<br>
+• Saída de Bariloche passando pelos <b>lagos Gutiérrez e Mascardi</b><br>
+• Travessia pelas <b>paisagens cênicas do Pampa Argentino</b><br>
+• Passagem pela <b>ponte sobre o Rio Manso</b><br>
+• Parada no <b>acampamento Los Rápidos</b><br>
+• <b>Pampa Linda</b> — pausa para refeição em cenário de tirar o fôlego<br>
+• <b>Glaciar Ventisquero Negro</b> — glaciar de coloração única com cachoeiras impressionantes<br><br>
+<span class="tag green">✅ INCLUSO</span> Traslado hotel até km 8 • Guia em inglês/espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingresso ao Parque Nacional (consultar valor)<br>
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   bolson: `<h4>🌿 Bolsón e Lago Puelo</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 465,00</span> por pessoa</span></div>
-<div class="info-row"><span class="ico">📅</span><span>Quinta e Sábado — 08:30 às 18:30</span></div>
-<b>Descrição:</b> 129 km pela estrada nacional 40 até El Bolsón. Lagos Gutiérrez, Catedral, Mascardi, Guillelmo e rio Villegas. Fazenda de trutas, fábrica de doces e Parque Nacional Puelo. Feira de artesanato na praça Pagano.<br><br>
+<div class="info-row"><span class="ico">📅</span><span><b>Apenas Quinta-feira e Sábado</b> — 08:30 às 18:30</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<b>Descrição:</b> Passeio de <b>129 km</b> pela <b>Estrada Nacional 40</b> de Bariloche até El Bolsón, com paisagens deslumbrantes das montanhas dos Andes.<br><br>
+<b>No caminho de ida:</b><br>
+• Vistas do <b>Lago Gutiérrez</b> e <b>Cerro Catedral</b><br>
+• Passagem pelo <b>Lago Mascardi</b>, <b>Lago Guillelmo</b> e <b>Rio Villegas</b><br><br>
+<b>Em El Bolsón:</b><br>
+• Visita a uma <b>fazenda de trutas</b><br>
+• Visita a uma <b>fábrica de doces artesanais</b><br>
+• <b>Parque Nacional Puelo</b><br>
+• <b>Feira de artesanato na Praça Pagano</b> — produtos em metal, madeira, cerâmica e lã<br><br>
 <span class="tag green">✅ INCLUSO</span> Traslado hotel até km 8 • Guia em espanhol<br>
-<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingresso Parque Nacional (consultar)<br>`,
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingresso ao Parque Nacional (consultar valor)<br>
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   isla_victoria: `<h4>⛵ Isla Victoria y Bosque de Arrayanes</h4>
-<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 655,00</span> acima de 12 anos &nbsp;|&nbsp; <span class="price">R$ 355,00</span> crianças 5 a 12 anos</span></div>
-<div class="info-row"><span class="ico">🚌</span><span>Transfer opcional: R$ 190,00 por pessoa ida e volta</span></div>
-<div class="info-row"><span class="ico">🕐</span><span>10:00 às 18:30 <em>ou</em> 14:00 às 18:30</span></div>
-<b>Descrição:</b> Parte de Puerto Pañuelo, 30 min de barco até Ilha Victoria. Trilhas, pinturas rupestres, Playa del Toro. Segue para Quetrihué — Parque Nacional Los Arrayanes, com floresta única de arrayanes troncos canela.<br><br>
-<span class="tag green">✅ INCLUSO</span> Guia inglês/espanhol<br>
-<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Taxa de embarque • Ingresso Parque Nacional • Traslado até Puerto Pañuelo (opcional, consultar ponto de encontro)<br>
-<div class="warning">Também disponível serviço VIP no Catamarã (contratado separadamente).</div>`,
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 655,00</span> acima de 12 anos &nbsp;|&nbsp; <span class="price">R$ 355,00</span> crianças de 5 a 12 anos</span></div>
+<div class="info-row"><span class="ico">🚌</span><span>Transfer opcional Puerto Pañuelo: <span class="price">R$ 190,00</span>/pessoa ida e volta</span></div>
+<div class="info-row"><span class="ico">🕐</span><span><b>Manhã:</b> 10:00 às 18:30 &nbsp;|&nbsp; <b>Tarde:</b> 14:00 às 18:30</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<b>Descrição:</b> A excursão parte de <b>Puerto Pañuelo</b>, navegando <b>30 minutos</b> até <b>Puerto Anchorena</b>, na <b>Ilha Victoria</b>. Na ilha, é possível explorar:<br>
+• <b>Sendero Ex Vivero Nacional</b> — trilha por uma antiga vila histórica<br>
+• <b>Sendero de Interpretación "Antonio Pargade"</b> — com pinturas rupestres milenares<br>
+• <b>Playa del Toro</b> e <b>Balcón del Cerro Bella Vista</b><br><br>
+A jornada continua até a <b>Península de Quetrihué</b>, onde fica o <b>Parque Nacional Los Arrayanes</b> — floresta única no mundo, com árvores de troncos larguíssimos e casca cor de canela.<br><br>
+💎 <b>Opção VIP no Catamarã</b> disponível (contratado separadamente — consultar valor)<br><br>
+<span class="tag green">✅ INCLUSO</span> Guia em inglês/espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Taxa de embarque (consultar) • Ingresso ao Parque Nacional (consultar) • Traslado até Puerto Pañuelo (opcional, consultar ponto de encontro)<br>
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   puerto_blest: `<h4>🚢 Puerto Blest y Cascada Los Cántaros</h4>
-<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 685,00</span> acima 12 anos &nbsp;|&nbsp; <span class="price">R$ 370,00</span> crianças 5 a 12 anos</span></div>
-<div class="info-row"><span class="ico">➕</span><span>Extensão Lago Frias: <strong>R$320 adulto / R$220 criança</strong> (opcional)</span></div>
-<div class="info-row"><span class="ico">🚌</span><span>Transfer: R$250/pessoa ida e volta (opcional)</span></div>
-<div class="info-row"><span class="ico">🕐</span><span>10:00 às 16:45 <em>ou</em> 13:00 às 19:00</span></div>
-<b>Descrição:</b> Catamarã pelo Braço Blest do Lago Nahuel Huapi passando pela Isla Centinela. Chega em Puerto Cántaros na Selva Valdiviana. Trilha ao Lago Los Cántaros e cachoeira. Almoço em Puerto Blest. Extensão ao Lago Frias opcional.<br><br>
-<span class="tag green">✅ INCLUSO</span> Guia inglês/espanhol<br>
-<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Taxa de embarque • Ingresso Parque Nacional • Transfer até Puerto Pañuelo<br>`,
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 685,00</span> acima de 12 anos &nbsp;|&nbsp; <span class="price">R$ 370,00</span> crianças de 5 a 12 anos</span></div>
+<div class="info-row"><span class="ico">➕</span><span>Extensão Lago Frias (opcional): <span class="price">R$ 320,00</span> adulto &nbsp;|&nbsp; <span class="price">R$ 220,00</span> criança 5-12</span></div>
+<div class="info-row"><span class="ico">🚌</span><span>Transfer Puerto Pañuelo (opcional): <span class="price">R$ 250,00</span>/pessoa ida e volta</span></div>
+<div class="info-row"><span class="ico">🕐</span><span><b>Manhã:</b> 10:00 às 16:45 &nbsp;|&nbsp; <b>Tarde:</b> 13:00 às 19:00</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<b>Descrição:</b> Passeio de barco que começa em <b>Puerto Pañuelo</b> (traslado exclusivo). O roteiro completo:<br>
+• <b>Catamarã</b> navega pelo <b>Braço Blest do Lago Nahuel Huapi</b><br>
+• Passagem pela <b>Isla Centinela</b> — onde repousa o <b>Perito Moreno</b>, herói nacional argentino<br>
+• Após 1 hora de navegação: <b>Puerto Cántaros</b>, na <b>Selva Valdiviana</b><br>
+• Trilha até o <b>Lago Los Cántaros</b> e sua bela <b>cascata homônima</b><br>
+• Travessia para <b>Puerto Blest</b> — almoço antes do retorno<br>
+• Opcional: <b>navegação com extensão ao Lago Frias</b> (paisagem de tirar o fôlego!)<br><br>
+<span class="tag green">✅ INCLUSO</span> Guia em inglês/espanhol<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Taxa de embarque (consultar) • Ingresso ao Parque Nacional (consultar) • Transfer até Puerto Pañuelo<br>
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   snowcat: `<h4>❄️ Snowcat Patagonia</h4>
-<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 1.460,00</span> por pessoa +12 anos &nbsp;|&nbsp; <span class="price">R$ 1.270,00</span> crianças 4 a 12 anos</span></div>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 1.460,00</span> por pessoa acima de 12 anos &nbsp;|&nbsp; <span class="price">R$ 1.270,00</span> crianças de 4 a 12 anos</span></div>
 <div class="info-row"><span class="ico">🕐</span><span>08:00 às 19:00</span></div>
-<div class="info-row"><span class="ico">❄️</span><span>Apenas inverno (junho a setembro)</span></div>
-<b>Descrição:</b> Pela rota 40 ao sul, passando pelos lagos Gutiérrez, Mascardi e Guilhelmo. No plateau a 1700m, passeio em SNOWCATs e Toyotas Hilux 4x4 com esteiras para até 10 passageiros. Tempo livre para almoço.<br><br>
-<span class="tag green">✅ INCLUSO</span> Traslado hotel/ponto de encontro • Guia turístico • Passeio em caminhonete 4x4 com esteiras • Meios de elevação • Pistas de culipatins<br>
-<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Roupa de neve<br>`,
+<div class="info-row"><span class="ico">❄️</span><span><b>EXCLUSIVO INVERNO</b> — junho a setembro</span></div>
+<b>Descrição:</b> Uma das experiências mais exclusivas da Patagônia! Partindo de Bariloche pela <b>Rota 40 ao sul</b>:<br>
+• Passagem pelos <b>lagos Gutiérrez, Mascardi e Guillelmo</b><br>
+• Entrada no <b>Cañadón de la Mosca</b> por uma rota de montanha<br>
+• Após <b>1h45 min</b>, chegada à base do cerro para pegar os meios de elevação<br>
+• No <b>plateau a 1.700 metros de altitude</b>: passeio nos famosos <b>SNOWCATs</b> — Toyota Hilux 4x4 adaptadas com esteiras, para até 10 passageiros<br>
+• Navegação pelo <b>terreno nevado</b> com vistas panorâmicas inesquecíveis<br>
+• <b>Pistas de culipatins</b> (tipo trenó) incluso<br>
+• Tempo livre para almoço (por conta)<br><br>
+<span class="tag green">✅ INCLUSO</span><br>
+• Traslado hotel/ponto de encontro • Guia turístico<br>
+• Passeio em caminhonete 4x4 com esteiras (SNOWCATs)<br>
+• Meios de elevação • Pistas de culipatins<br><br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Roupa de neve<br>
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   nieve_al_limite: `<h4>🏔️ Nieve al Limite</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 960,00</span> por pessoa</span></div>
 <div class="info-row"><span class="ico">🕐</span><span>10:00 às 19:00</span></div>
-<div class="info-row"><span class="ico">❄️</span><span>Apenas inverno</span></div>
-<b>Descrição:</b> Rumo à Villa La Angostura, contornando o lago Nahuel Huapi. Almoço com empanadas tradicionais. Brincadeiras na neve, culipatins. Guias oferecem alfajor e chá de rosa mosqueta.<br><br>
-<span class="tag green">✅ INCLUSO</span> Traslado hotel/ponto de encontro • Almoço em Villa La Angostura • Mini trekking e tempo livre na neve • Chá de rosa mosqueta e alfajor<br>
+<div class="info-row"><span class="ico">❄️</span><span><b>EXCLUSIVO INVERNO</b> — junho a setembro</span></div>
+<b>Descrição:</b> Dia especial com neve garantida! Rota: <b>Bariloche → Villa La Angostura</b>, contornando o <b>Lago Nahuel Huapi</b>.<br><br>
+<b>O dia inclui:</b><br>
+• <b>Almoço com empanadas tradicionais</b> da região em Villa La Angostura<br>
+• Diversão na neve: <b>mini trekking e culipatins</b><br>
+• Os guias servem <b>alfajor e chá de rosa mosqueta</b> para os participantes<br>
+• Tempo livre para aproveitar a paisagem nevada<br><br>
+<span class="tag green">✅ INCLUSO</span><br>
+• Traslado hotel/ponto de encontro<br>
+• Almoço em Villa La Angostura<br>
+• Mini trekking + tempo livre na neve + culipatins<br>
+• Chá de rosa mosqueta e alfajor<br><br>
 <span class="tag red">❌ NÃO INCLUSO</span> Despesas pessoais • Roupa de neve<br>
-<div class="warning">⚠️ Levar RG ou passaporte válido, permissão de saída para menores. Fazer declaração jurada para entrada no país (24h antes da excursão).</div>`,
+<div class="warning">⚠️ <b>DOCUMENTOS OBRIGATÓRIOS:</b> Levar RG ou passaporte válido + permissão de saída para menores (se aplicável). <b>Fazer a declaração jurada para entrada no país com 24 horas de antecedência.</b><br>Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   rafting_chile: `<h4>🌊 Rafting Rio Manso — Fronteira com Chile</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 810,00</span> por pessoa</span></div>
@@ -607,10 +688,18 @@ Estepe a 30km, fauna típica (lebres, veados, condores). Almoço com assados e s
 
   circuito_grande: `<h4>🗺️ Circuito Grande</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 490,00</span> por pessoa</span></div>
-<div class="info-row"><span class="ico">📅</span><span>Segunda, Quarta e Sexta — 09:00 às 18:00</span></div>
-<b>Descrição:</b> ~260km partindo de Bariloche. Rio Limay até o Anfiteatro (formação rochosa). Vale Encantado com o Dedo de Deus. Villa Traful (pesca de salmão). Puerto Arrayán, El Portezuelo, rota dos Sete Lagos, parada em Villa La Angostura.<br><br>
-<span class="tag green">✅ INCLUSO</span> Guia inglês/espanhol • Pick up hotéis do centro e até 8km<br>
-<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br>`,
+<div class="info-row"><span class="ico">📅</span><span><b>Segunda, Quarta e Sexta</b> — 09:00 às 18:00</span></div>
+<div class="info-row"><span class="ico">☀️❄️</span><span>Disponível Verão e Inverno</span></div>
+<b>Descrição:</b> Excursão de dia inteiro que percorre aproximadamente <b>260 km</b> pelos cenários mais dramáticos da região de Bariloche:<br>
+• <b>Rio Limay</b> até o <b>Anfiteatro</b> — formação rochosa natural semelhante a um circo romano<br>
+• <b>Vale Encantado</b> — famoso pelas formações rochosas curiosas, incluindo o icônico <b>Dedo de Deus</b><br>
+• <b>Villa Traful</b> — vila serena às margens do lago Traful, famosa pela pesca de salmão e camping<br>
+• <b>Puerto Arrayán</b> e <b>El Portezuelo</b><br>
+• Trecho da <b>Rota dos Sete Lagos</b><br>
+• Parada em <b>Villa La Angostura</b> antes do retorno a Bariloche<br><br>
+<span class="tag green">✅ INCLUSO</span> Guia em inglês/espanhol • Pick up nos hotéis do centro e até 8km<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br>
+<div class="warning">Sujeito a alterações climáticas. Horário sujeito a alteração sem aviso prévio.</div>`,
 
   buceo: `<h4>🤿 Bautismo de Buceo</h4>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$ 460,00</span> por pessoa</span></div>
@@ -975,7 +1064,7 @@ function findAnswer(rawQuery) {
 
   // TRASLADOS
   if (has(q, 'traslado', 'transfer', 'aeroporto', 'buscar', 'busca', 'hospedagem')) {
-    if (has(q, 'bariloche')) return KB.bariloche_intro.split('<b>Passeios')[0] + `<h4>🚗 Traslados — Bariloche</h4><div class="info-row"><span class="ico">💰</span><span><span class="price">R$180,00</span> só ida &nbsp;|&nbsp; <span class="price">R$350,00</span> ida e volta</span></div><div class="info-row"><span class="ico">🚌</span><span>Valores por carro para hotéis centrais. Madrugada: adicional R$65. Tolerância de 60 min após aterrissagem.</span></div><div class="warning">⚠️ Grupos de 4 pessoas: informar quantidade de malas antes de fechar o transfer. Pagamento 100% à vista via PIX tem 10% de desconto.</div>`;
+    if (has(q, 'bariloche')) return KB.traslado_bari;
     if (has(q, 'buenos', 'argentina')) return KB.traslado_ba;
     if (has(q, 'rio', 'rj', 'janeiro')) return KB.traslado_rj;
     return KB.traslado_ba + '<br><hr style="margin:10px 0; border-color:#eee"><br>' + KB.traslado_rj;
