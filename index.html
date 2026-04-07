@@ -204,6 +204,63 @@
   .typing span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
+  /* AI CONFIG BADGE */
+  .ai-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.15); border-radius: 20px;
+    padding: 4px 10px; font-size: 11px; cursor: pointer;
+    transition: background 0.2s; border: 1px solid rgba(255,255,255,0.3);
+    color: white; white-space: nowrap;
+  }
+  .ai-badge:hover { background: rgba(255,255,255,0.28); }
+  .ai-dot { width: 8px; height: 8px; border-radius: 50%; background: #B0BEC5; flex-shrink: 0; }
+  .ai-dot.on { background: #69F0AE; animation: pulse 2s infinite; }
+
+  /* SETTINGS FORM */
+  .settings-form label { display: block; font-size: 12.5px; font-weight: 600; color: var(--gray); margin: 14px 0 4px; }
+  .settings-form input[type="password"],
+  .settings-form input[type="text"],
+  .settings-form select {
+    width: 100%; border: 1.5px solid #CFD8DC; border-radius: 8px;
+    padding: 9px 12px; font-size: 13px; font-family: inherit;
+    outline: none; transition: border 0.2s;
+  }
+  .settings-form input:focus, .settings-form select:focus { border-color: var(--blue-light); }
+  .settings-form .save-btn {
+    background: var(--blue); color: white; border: none; border-radius: 8px;
+    padding: 11px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    margin-top: 14px; width: 100%; transition: background 0.2s;
+  }
+  .settings-form .save-btn:hover { background: #0D47A1; }
+  .settings-form .clear-btn {
+    background: #FFEBEE; color: var(--red); border: 1px solid #FFCDD2; border-radius: 8px;
+    padding: 9px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+    margin-top: 8px; width: 100%; transition: background 0.2s;
+  }
+  .settings-form .clear-btn:hover { background: #FFCDD2; }
+  .key-status { border-radius: 8px; padding: 10px 12px; margin: 10px 0; font-size: 12.5px; display: flex; gap: 8px; align-items: center; }
+  .key-status.ok { background: #E8F5E9; border: 1px solid #A5D6A7; color: #2E7D32; }
+  .key-status.missing { background: #FFF3E0; border: 1px solid #FFE082; color: #E65100; }
+
+  /* ROTEIRO MODAL */
+  .roteiro-textarea {
+    width: 100%; border: 1.5px solid #CFD8DC; border-radius: 8px;
+    padding: 10px 12px; font-size: 13.5px; font-family: inherit;
+    outline: none; min-height: 110px; resize: vertical; transition: border 0.2s;
+  }
+  .roteiro-textarea:focus { border-color: #9C27B0; }
+  .roteiro-btn {
+    background: linear-gradient(135deg, #6A1B9A, #9C27B0); color: white; border: none;
+    border-radius: 8px; padding: 11px 20px; font-size: 13.5px; font-weight: 600;
+    cursor: pointer; margin-top: 12px; width: 100%; transition: opacity 0.2s;
+  }
+  .roteiro-btn:hover { opacity: 0.88; }
+  .roteiro-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .action-btn.violet { border-color: #CE93D8; background: #F3E5F5; }
+  .action-btn.violet .label { color: #6A1B9A; }
+  /* AI typing indicator in different color */
+  .msg.bot.ai .bubble { border-color: #E1BEE7; background: #FCF8FF; }
+
   @media (max-width: 600px) {
     main { padding: 10px; }
     .actions-grid { grid-template-columns: repeat(2, 1fr); }
@@ -219,7 +276,10 @@
     <h1>Rota 98 Tour</h1>
     <p>Assistente de Vendas — Equipe Interna</p>
   </div>
-  <div class="status-dot" title="Assistente ativo"></div>
+  <button class="ai-badge" onclick="openModal('modal-settings')" title="Configurar IA OpenAI">
+    <div class="ai-dot" id="aiDot"></div>
+    <span id="aiLabel">⚙️ IA Config</span>
+  </button>
 </header>
 
 <main>
@@ -246,12 +306,17 @@
         <span class="icon">⛴️</span>
         <span class="label">Promoção Bate e Volta Colônia</span>
       </button>
+      <button class="action-btn violet" onclick="openModal('modal-roteiro')">
+        <span class="icon">🗺️</span>
+        <span class="label">Montar Roteiro por Perfil</span>
+      </button>
     </div>
   </div>
 
   <div class="chat-card">
     <div class="chat-header">
-      🤖 Assistente IA — Consulta de Serviços e Pacotes
+      <span>🤖 Assistente IA — Consulta de Serviços e Pacotes</span>
+      <button onclick="novaConversa()" title="Reiniciar conversa" style="margin-left:auto;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.35);color:white;border-radius:16px;padding:3px 10px;font-size:11.5px;cursor:pointer;white-space:nowrap;">🔄 Nova Conversa</button>
     </div>
     <div class="chat-messages" id="chatMessages">
       <div class="msg bot">
@@ -445,6 +510,86 @@
         <p>✅ Se o passeio aparecer → <strong>disponível para venda</strong><br>❌ Se não aparecer → <strong>não disponível</strong></p>
       </div>
       <p style="font-size:12px; color:var(--gray); margin-top:10px;">⚡ Ainda mais importante para datas próximas, onde a disponibilidade muda rapidamente.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SETTINGS OPENAI -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal">
+    <div class="modal-header" style="background: linear-gradient(135deg,#4A148C,#7B1FA2);">
+      <span style="font-size:22px">🤖</span>
+      <h2>Configurar IA — OpenAI</h2>
+      <button class="modal-close" onclick="closeModal('modal-settings')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="keyStatusBox"></div>
+      <div class="settings-form">
+
+        <label>🔑 Chave API OpenAI (sk-...)</label>
+        <input type="password" id="settingsKey" placeholder="sk-proj-xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+
+        <div style="margin-top:16px; border:1.5px solid #CE93D8; border-radius:10px; padding:14px; background:#FCF8FF;">
+          <div style="font-size:13px; font-weight:700; color:#6A1B9A; margin-bottom:10px;">🎯 Modo de IA</div>
+          <label style="margin-top:0; display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="radio" name="aiMode" id="modeChat" value="chat" onchange="onModeChange()" style="width:auto;" />
+            <span><strong>Chat Completions</strong> — usa o catálogo embutido no HTML</span>
+          </label>
+          <label style="margin-top:10px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="radio" name="aiMode" id="modeAssistant" value="assistant" onchange="onModeChange()" style="width:auto;" />
+            <span><strong>Assistants API</strong> — conecta ao seu Assistente criado no painel OpenAI</span>
+          </label>
+        </div>
+
+        <div id="chatModeOptions">
+          <label>🧠 Modelo</label>
+          <select id="settingsModel">
+            <option value="gpt-4o-mini">GPT-4o Mini — rápido e econômico ✅ recomendado</option>
+            <option value="gpt-4o">GPT-4o — mais inteligente (custa mais)</option>
+            <option value="gpt-3.5-turbo">GPT-3.5 Turbo — muito econômico</option>
+          </select>
+        </div>
+
+        <div id="assistantModeOptions" style="display:none;">
+          <label>🤖 Assistant ID</label>
+          <input type="text" id="settingsAssistantId" placeholder="asst_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+          <p style="font-size:11.5px; color:#9E9E9E; margin-top:6px;">
+            Encontre em <strong>platform.openai.com/assistants</strong> → clique no seu Assistente → copie o ID no topo da página.
+          </p>
+          <div style="background:#E8F5E9; border:1px solid #A5D6A7; border-radius:8px; padding:10px 12px; margin-top:8px; font-size:12.5px; color:#2E7D32;">
+            ✅ Com Assistants API, o histórico da conversa fica no thread da OpenAI. Use <strong>"Nova Conversa"</strong> no chat para reiniciar.
+          </div>
+        </div>
+
+        <div class="alert-box" style="margin-top:14px">
+          <span>⚠️</span>
+          <span>A chave e o ID ficam salvos <strong>somente neste navegador</strong>. Vão direto para a OpenAI — nenhum servidor intermediário.</span>
+        </div>
+        <button class="save-btn" onclick="saveAISettings()">💾 Salvar Configurações</button>
+        <button class="clear-btn" onclick="clearAISettings()">🗑️ Remover configurações salvas</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: MONTAR ROTEIRO -->
+<div class="modal-overlay" id="modal-roteiro">
+  <div class="modal">
+    <div class="modal-header" style="background: linear-gradient(135deg,#4A148C,#9C27B0);">
+      <span style="font-size:22px">🗺️</span>
+      <h2>Montar Roteiro por Perfil</h2>
+      <button class="modal-close" onclick="closeModal('modal-roteiro')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Descreva o perfil e preferências do cliente. O GPT vai sugerir os melhores passeios da Rota 98, combinando os serviços disponíveis para o destino.</p>
+      <div class="alert-box">
+        <span>💡</span>
+        <span>Exemplo: <em>"Casal, 45 anos, gosta de gastronomia e vinhos, quer Buenos Aires com 1 dia em Tigre, orçamento médio"</em></span>
+      </div>
+      <label style="display:block;font-size:12.5px;font-weight:600;color:#546E7A;margin:12px 0 6px">Perfil do cliente:</label>
+      <textarea class="roteiro-textarea" id="roteiroProfile" placeholder="Ex: Família com 2 filhos adolescentes, gostam de aventura e esportes, viagem para Bariloche no inverno, 5 dias disponíveis..."></textarea>
+      <button class="roteiro-btn" id="roteiroBtn" onclick="gerarRoteiro()">🗺️ Gerar Roteiro Personalizado com IA</button>
+      <p style="font-size:11.5px;color:#9E9E9E;margin-top:8px;text-align:center">Requer chave OpenAI configurada em ⚙️ IA Config</p>
     </div>
   </div>
 </div>
@@ -719,19 +864,21 @@ CNPJ: 55.211.880/0001-37<br><br>
 
   // --- BUENOS AIRES ---
   buenosaires_intro: `<h4>🌆 Buenos Aires — Serviços Disponíveis</h4>
-<b>Traslados:</b> Sedan e carro grande, Ezeiza e Aeroparque<br><b>Kit Boas-Vindas:</b> R$190 (ou R$95 com transfer contratado)<br><br>
-<b>City Tours:</b><br>
-<span class="tag">City Tour Privado Full Day R$890/carro</span><span class="tag">City Tour com Fotos R$550/carro</span><span class="tag">Noturno Fotográfico R$600/carro</span><span class="tag">12 Pontos Compartilhado R$135-270</span><span class="tag">Palermo Privado R$650</span><br><br>
-<b>Estádios:</b><br>
-<span class="tag">Boca+River Privado R$500/carro</span><span class="tag">Boca+River Compartilhado R$485/pessoa</span><br><br>
-<b>Barco/Passeios:</b><br>
-<span class="tag">Tigre Privado R$390/pessoa</span><span class="tag">Tigre Premium R$480/pessoa</span><span class="tag">Tigre Clássico R$235/pessoa</span><span class="tag">Navegação R$155-250</span><span class="tag">Pôr do Sol Open Bar R$275-330</span><br><br>
-<b>Parques:</b><br>
-<span class="tag">Parque de La Costa R$400</span><span class="tag">Bioparque Temaikén R$480</span><span class="tag">Mundo Marino R$945</span><span class="tag">Campanópolis R$320</span><br><br>
-<b>Gastronomia:</b><br>
-<span class="tag">Bodega Gamboa R$750</span><br><br>
-<b>Shows de Tango:</b><br>
-<span class="tag">Madero Tango</span><span class="tag">Tango Porteño</span><span class="tag">Señor Tango</span><span class="tag">Piazzolla Tango</span>`,
+<b>🚗 Traslados:</b> Sedan (até 4 pax) e Carro Grande — Ezeiza e Aeroparque<br>
+<b>🎁 Kit Boas-Vindas:</b> <span class="price">R$190</span> avulso &nbsp;|&nbsp; <span class="price">R$95</span> com transfer (50% desconto)<br><br>
+<b>🏙️ City Tours:</b><br>
+<span class="tag">Full Day Privado c/ Fotos R$890/carro (4pax)</span><span class="tag">Ensaio Fotográfico Privado R$550/carro</span><span class="tag">Noturno Privado c/ Fotos R$600/carro</span><span class="tag">12 Pontos Compartilhado R$135–270/pessoa</span><span class="tag">Palermo Privado R$650/carro</span><span class="tag">Tour Cultural Privado R$650/carro</span><span class="tag">Ônibus Turístico Hop-On/Off R$320–415</span><br><br>
+<b>⚽ Estádios:</b><br>
+<span class="tag">Boca+River Privado R$500/carro</span><span class="tag">Boca+River Compartilhado R$485/pessoa • Ter/Qui/Sáb</span><br><br>
+<b>🚢 Passeios de Barco:</b><br>
+<span class="tag">Tigre Privado Fotográfico R$390/pessoa</span><span class="tag">Tigre Premium Privado R$480/pessoa</span><span class="tag">Tigre Delta Clássico Compartilhado R$235/pessoa</span><span class="tag">Navegação Postais R$155–250</span><span class="tag">Pôr do Sol Open Bar R$275–330</span><br><br>
+<b>🎡 Parques:</b><br>
+<span class="tag">Parque de La Costa R$400 • Sáb/Dom/Fer</span><span class="tag">Bioparque Temaikén R$480 adulto / R$270 criança</span><span class="tag">Mundo Marino R$945 adulto / R$620 criança</span><span class="tag">Campanópolis R$320</span><span class="tag">Campanópolis + Plaza Canning R$399</span><br><br>
+<b>🍷 Gastronomia — Bodega Gamboa:</b><br>
+<span class="tag">Experiência Gamboa R$750 adulto</span><span class="tag">Imersão Gamboa R$785 (só adultos)</span><span class="tag">Pizzaria do Bosquecito R$560</span><br><br>
+<b>💃 Shows de Tango:</b><br>
+<span class="tag">Madero Tango R$305–605</span><span class="tag">Tango Porteño R$250–570</span><span class="tag">Señor Tango R$450–1.250</span><span class="tag">Piazzolla Tango R$450–915</span><br><br>
+Pergunte sobre qualquer serviço para ver detalhes completos, horários e o que está incluído!`,
 
   traslado_ba: `<h4>🚗 Traslados — Buenos Aires</h4>
 <div class="warning">⚠️ Valores por carro, não por pessoa. Madrugada tem adicional de R$65. 10% desconto à vista PIX.</div>
@@ -757,104 +904,202 @@ CNPJ: 55.211.880/0001-37<br><br>
 </ul>`,
 
   citytour_ba: `<h4>🏙️ City Tours — Buenos Aires</h4>
-<b>1. City Tour Privado Full Day com Fotos:</b><br>
-<span class="price">R$890/carro</span> (até 4 pax) &nbsp;|&nbsp; <span class="price">R$1.250/carro</span> (até 6 pax) &nbsp;|&nbsp; 9h de duração<br>
-15 pontos + fotos profissionais + parada Puerto Madero<br><br>
-<b>2. City Tour Privado com Ensaio Fotográfico (meio dia):</b><br>
-<span class="price">R$550/carro</span> (até 4 pax) &nbsp;|&nbsp; <span class="price">R$750/carro</span> (até 6 pax)<br>
-Manhã a partir 8h ou tarde a partir 14h. 14 pontos + fotos profissionais<br><br>
-<b>3. City Tour Noturno Privado com Fotos:</b><br>
-<span class="price">R$600/carro</span> (até 4 pax) &nbsp;|&nbsp; <span class="price">R$850/carro</span> (até 6 pax)<br>
-A partir das 18h. 6 pontos iluminados + fotos profissionais<br><br>
-<b>4. City Tour 12 Pontos Compartilhado:</b><br>
-<span class="price">R$135/pessoa</span> (sem almoço) &nbsp;|&nbsp; <span class="price">R$180/pessoa</span> (fotográfico) &nbsp;|&nbsp; <span class="price">R$270/pessoa</span> (com almoço + degustação)<br>
-Todos os dias às 10h. Guia em português, inglês e espanhol<br><br>
-<b>5. City Tour Palermo Privado:</b><br>
-<span class="price">R$650/carro</span> (até 4 pax) — Rosedal, Jardim Japonês, Planetário, Ecoparque, Jardim Botânico<br>`,
+
+<b>1. City Tour Privado Full Day com Fotos 📸</b><br>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$890/carro</span> até 4 pax &nbsp;|&nbsp; <span class="price">R$1.250/carro</span> até 6 pax</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Duração 9 horas — traslado incluso + motorista particular</span></div>
+Passa por <b>15 pontos</b> com fotos profissionais em cada parada + parada para almoço em <b>Puerto Madero</b> (almoço por conta do cliente) + <b>1 troca de roupa</b> para ensaio:<br>
+Obelisco & Placa BA • Plaza de Mayo & Casa Rosada • Museu Cabildo & Catedral • <b>La Boca / Caminito</b> (tempo para compras) • Puente de La Mujer • Floralis Genérica & Faculdade de Direito • <b>Degustação de doce de leite</b> • <b>Parada para compras de vinho</b> • Mafalda em San Telmo • Jardim Japonês • La Bombonera (externo) • River Plate (externo) • Planetário Galileo Galilei • Bairro Chino • <b>Livraria El Ateneo</b><br>
+<em>Pontos extras possíveis por R$130/parada (carro pequeno) ou R$195 (carro grande): Cemitério da Recoleta, Galerias Pacífico, Rua Florida</em><br><br>
+
+<b>2. City Tour Privado com Ensaio Fotográfico (Meio Dia) 📸</b><br>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$550/carro</span> até 4 pax &nbsp;|&nbsp; <span class="price">R$750/carro</span> até 6 pax</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Manhã: início às 8h &nbsp;|&nbsp; Tarde: início às 14h — traslado + motorista + fotos profissionais</span></div>
+<b>14 pontos turísticos:</b> Obelisco • Placa BA • Plaza de Mayo • Casa Rosada • Museu Cabildo • Catedral Metropolitana • La Boca / Caminito • Puente de La Mujer • Floralis Genérica • Faculdade de Direito • Degustação de doce de leite • Parada para compras de vinho • Mafalda em San Telmo • La Bombonera (externo)<br>
+<em>Pontos extras: Jardim Japonês, Cemitério da Recoleta, Planetário, Galerias Pacífico, Rua Florida (consultar valor)</em><br><br>
+
+<b>3. City Tour Noturno Privado e Fotográfico 🌙</b><br>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$600/carro</span> até 4 pax &nbsp;|&nbsp; <span class="price">R$850/carro</span> até 6 pax</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>A partir das 18h — traslado + motorista + fotos profissionais</span></div>
+<b>6 pontos iluminados:</b> Obelisco • Casa Rosada • Catedral • Floralis Genérica • Planetário • Puente de La Mujer<br><br>
+
+<b>4. City Tour 12 Pontos Compartilhado 🚌</b><br>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$135/pessoa</span> (sem almoço) &nbsp;|&nbsp; <span class="price">R$180/pessoa</span> (fotográfico) &nbsp;|&nbsp; <span class="price">R$270/pessoa</span> (com almoço + degustação)</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias às 10h — guia em português, inglês e espanhol — traslado ida incluso</span></div>
+<b>12 pontos:</b> Faculdade de Direito • Floralis Genérica • La Biela • Atlas do Mundo • Igreja N. Sra. do Pilar • Teatro Colón • Plaza de Mayo • Casa Rosada • Puente de La Mujer • Mafalda • Estádio Boca Juniors • Caminito<br>
+<em>Opção com almoço: Restaurante La Casa del 10 + degustação de fernet, alfajores e doce de leite (não inclui bebidas)</em><br><br>
+
+<b>5. City Tour Palermo Privado 🌸</b><br>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$650/carro</span> até 4 pax — traslado + motorista + fotos profissionais</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Manhã: início às 8h &nbsp;|&nbsp; Tarde: início às 14h</span></div>
+<b>6 pontos:</b> Café no Palácio Duhal • Rosedal • Jardim Japonês • Planetário Galileo Galilei • Ecoparque • Jardim Botânico<br><br>
+
+<b>6. Tour Cultural Privado 🎨</b><br>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$650/carro</span> até 4 pax &nbsp;|&nbsp; <span class="price">R$990/carro</span> até 6 pax — traslado ida e volta + motorista</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — Manhã: início às 8h &nbsp;|&nbsp; Tarde: início às 14h</span></div>
+<b>4 pontos culturais:</b> <b>Livraria El Ateneo</b> (uma das mais belas do mundo!) • <b>Teatro Colón</b> • <b>Museu Nacional de Belas Artes</b> • <b>Museu MALBA</b> (arte latino-americana)<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingressos<br><br>
+
+<b>7. Ônibus Turístico Hop-On/Hop-Off 🚌</b><br>
+<div class="info-row"><span class="ico">💰</span><span>24h: <span class="price">R$320</span> adulto / <span class="price">R$205</span> criança 4-11 anos &nbsp;|&nbsp; 48h: <span class="price">R$385</span> / <span class="price">R$250</span> &nbsp;|&nbsp; 72h: <span class="price">R$415</span> / <span class="price">R$265</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Das 09:00 às 17:00 — a cada 15 a 30 minutos</span></div>
+Passeio pelos bairros mais emblemáticos. <b>Entre e saia à vontade</b> nas paradas (Hop-On/Hop-Off). Duração total ~4h. <b>Áudio guia em 9 idiomas</b> (português, inglês, espanhol, alemão, francês, italiano, chinês, japonês, russo) com fones de ouvido a bordo.<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais`,
 
   estadios_ba: `<h4>⚽ Tour nos Estádios — Boca Juniors e River Plate</h4>
-<b>Privado:</b>
+<b>Opção 1 — Privado:</b>
 <div class="info-row"><span class="ico">💰</span><span><span class="price">R$500/carro</span> até 4 pax &nbsp;|&nbsp; <span class="price">R$700/carro</span> até 6 pax</span></div>
-<div class="info-row"><span class="ico">🕐</span><span>Horário personalizado — Duração 3h30</span></div>
-La Bombonera (externo + Museu da Paixão Boquense com Mural de Maradona) + Estádio River Plate (externo + Museu)<br><br>
-<b>Compartilhado:</b>
-<div class="info-row"><span class="ico">💰</span><span><span class="price">R$485/pessoa</span></span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Horário personalizado — Duração ~3h30 — traslado ida e volta + motorista particular</span></div>
+O roteiro inclui:<br>
+• <b>La Bombonera</b> (La Boca) — tour pelo exterior + <b>Museu da Paixão Boquense</b>: história do clube, evolução da camisa, sala de troféus e o famoso <b>Mural de Diego Maradona</b><br>
+• <b>Estádio River Plate</b> (norte da cidade) — tour pelo exterior + <b>Museu do River Plate</b>: história desde a fundação em 1901, suas estrelas e conquistas<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingressos de entrada aos estádios<br><br>
+
+<b>Opção 2 — Compartilhado:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$485/pessoa</span> — <b>inclui ingressos e guia</b></span></div>
 <div class="info-row"><span class="ico">📅</span><span>Terça, Quinta e Sábado — a partir das 08:45</span></div>
-Inclui ingressos e guia português/espanhol/inglês. Drop off nas Galerías Pacífico e Obelisco.<br>`,
+• Mesmo roteiro: La Bombonera (exterior + Museu Paixão Boquense + Mural Maradona) + River Plate (exterior + Museu)<br>
+• Guia em português, espanhol e inglês<br>
+• Traslado de ida para hotéis no Centro e Recoleta (passageiros em outras localidades, deslocar ao hotel mais próximo)<br>
+• Drop off na chegada: <b>Galerías Pacífico</b> ou <b>Obelisco</b> (retorno ao hotel não incluso)<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Traslado de volta ao hotel`,
 
   tigre_ba: `<h4>🌿 Tigre — Delta do Paraná</h4>
-<b>Opção 1 — Privado Fotográfico:</b><br>
-<span class="price">R$390/pessoa</span> (mín. 2 pessoas) — Manhã 8:30 ou Tarde 14:30<br>
-Catamarã, jardim do Museu de Arte de Tigre, Puerto de Frutos, Cassino Trilenium. Fotos profissionais.<br><br>
-<b>Opção 2 — Tigre Premium Privado:</b><br>
-<span class="price">R$480/pessoa</span> (mín. 2) — Saída hotel 9:30 / barco 10:00 / retorno ~15h<br>
-Passeio costeiro catamarã pelo Rio de la Plata e Delta do Paraná (1h50). Fotos profissionais.<br><br>
-<b>Opção 3 — Delta Clássico Compartilhado:</b><br>
-<span class="price">R$235/pessoa</span> — Todos os dias às 9h<br>
-Navegação 1h pelos rios do Delta. Guia em português/espanhol/inglês. Drop off Puerto Madero/Obelisco.<br>`,
+A apenas <b>36km ao norte de Buenos Aires</b> está o Delta do Rio Paraná, conhecida como <b>"a pequena Veneza"</b>.<br><br>
+
+<b>Opção 1 — Tigre Privado Fotográfico:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$390/pessoa</span> (mínimo 2 pessoas) — traslado ida e volta + fotos profissionais</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Saída manhã: 08:30 &nbsp;|&nbsp; Saída tarde: 14:30</span></div>
+Catamarã pelos rios e canais do Delta. Paradas: jardim do <b>Museu de Arte de Tigre</b> • <b>Puerto de Frutos</b> (passeio e compras) • <b>Cassino Trilenium</b><br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingressos dos parques e museus<br><br>
+
+<b>Opção 2 — Tigre Premium Privado Fotográfico:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$480/pessoa</span> (mínimo 2 pessoas) — traslado ida e volta + fotos profissionais</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Saída hotel: 09:30 → Barco: 10:00 → Tigre: 12:00 → Saída Tigre: 14:30 → Hotel: ~15:00</span></div>
+Passeio costeiro de catamarã pelo <b>Rio de la Plata</b> + <b>Delta do Paraná</b> (~1h50). Vistas panorâmicas do centro de Buenos Aires. Museu de Arte de Tigre + Puerto de Frutos + Cassino Trilenium. (fotógrafo não acompanha o barco)<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingressos<br><br>
+
+<b>Opção 3 — Tigre Delta Clássico Compartilhado:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$235/pessoa</span> — guia em português, espanhol e inglês • van ida e volta</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias às 9h — término ~15h</span></div>
+<b>Navegação de 1 hora</b> pelos rios do Delta. Parada fotográfica nos jardins do Museu de Arte de Tigre + tempo livre no <b>Puerto de Frutos</b>. Drop off em Puerto Madero, Galerías Pacífico ou Obelisco (retorno ao hotel por custo adicional).<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Ingressos • Traslado de volta ao hotel`,
 
   navegacao_ba: `<h4>🛳️ Navegações — Buenos Aires</h4>
-<b>Postais de Buenos Aires (Rio de la Plata):</b><br>
-<span class="price">R$250/pessoa</span> ida e volta &nbsp;|&nbsp; <span class="price">R$155/pessoa</span> só ida<br>
-Saídas Puerto Madero: 9:30 / 11:30 / 14:00 / 16:00<br>
-40 minutos. Vista panorâmica, Reserva Ecológica, arranha-céus, Ponte Transbordador. Desembarca em La Boca / Caminito.<br><br>
-<b>Pôr do Sol com Open Bar:</b><br>
-<span class="price">R$275/pessoa</span> (1h) &nbsp;|&nbsp; <span class="price">R$330/pessoa</span> (2h)<br>
-Quarta, Sexta e Sábado — embarque 17h, partida 18:00/18:15, retorno ~19h<br>
-Open bar de bebidas nacionais, refrigerantes e cerveja artesanal!<br>`,
+
+<b>Opção 1 — Postais de Buenos Aires (Rio de la Plata):</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$250/pessoa</span> ida e volta &nbsp;|&nbsp; <span class="price">R$155/pessoa</span> só ida</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Saídas Puerto Madero: 9:30 / 11:30 / 14:00 / 16:00 &nbsp;|&nbsp; Saídas La Boca: 10:30 / 13:00 / 15:00 / 17:30</span></div>
+Pela primeira vez em anos, possibilidade de <b>desembarcar no cais de La Boca</b>, perto da famosa Calle Caminito. Trajeto de <b>40 minutos</b> com:<br>
+• <b>Áudio guia em português</b> incluso • Ambiente climatizado • Espaço exterior ao ar livre<br>
+• Vistas da Reserva Ecológica, arranha-céus, <b>Ponte Transbordador Nicolás Avellaneda</b><br>
+Arte, história, futebol, portos e arquitetura — ideal para famílias e complemento de city tour<br>
+<em>Bar e cafeteria a bordo com custo adicional</em><br><br>
+
+<b>Opção 2 — Pôr do Sol com Open Bar:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$275/pessoa</span> (1 hora) &nbsp;|&nbsp; <span class="price">R$330/pessoa</span> (2 horas) — ingresso + open bar incluso</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Quarta, Sexta e Sábado — embarque 17h / partida 18:00–18:15 / retorno ~19h</span></div>
+Cruzeiro pelo <b>Rio de la Plata</b> com vistas deslumbrantes de Buenos Aires ao pôr do sol. <b>Open bar ilimitado</b>: bebidas nacionais, refrigerantes e <b>cerveja artesanal</b>.<br>
+<em>Transfer opcional: R$210 ida e volta (pode ser contratado separadamente)</em>`,
 
   tango_ba: `<h4>💃 Shows de Tango — Buenos Aires</h4>
-<b>🎭 Madero Tango (Porto Madero):</b><br>
-• Solo Show: <span class="price">R$305</span> (sem transfer) | VIP: <span class="price">R$390</span> (com transfer)<br>
-• Last Minute: <span class="price">R$305</span><br>
-• Cena Show Plateia: <span class="price">R$415</span><br>
-• Cena Show Executivo: <span class="price">R$485</span><br>
-• Cena Show Black: <span class="price">R$605</span><br>
-Todos incluem voucher de 30.000 pesos para Cassino.<br><br>
-<b>🎭 Tango Porteño:</b><br>
-• Solo Show: <span class="price">R$250</span> | Preferencial: <span class="price">R$315</span><br>
-• Cena Show Plateia: <span class="price">R$465</span><br>
-• Cena Show Executivo: <span class="price">R$490</span><br>
-• Cena Show VIP: <span class="price">R$570</span><br>
-Transfer compartilhado incluso (regiões centrais)<br><br>
-<b>🎭 Señor Tango (maior casa de espetáculos de BA):</b><br>
-• Solo Show: <span class="price">R$450</span> | Solo Show VIP: <span class="price">R$805</span><br>
-• Cena Show: <span class="price">R$630</span> | Cena Show VIP: <span class="price">R$1.250</span><br>
-Transfer opcional: R$115/pessoa<br><br>
-<b>🎭 Piazzolla Tango:</b><br>
-• Solo Show Plateia: <span class="price">R$450</span> | VIP: <span class="price">R$515</span><br>
-• Cena Show Plateia: <span class="price">R$450</span> | VIP: <span class="price">R$915</span><br>
-Transfer: R$90 (centro) ou R$100 (Palermo)<br>`,
+
+<b>🎭 Madero Tango</b> — localizado em <b>Puerto Madero</b>, vista única do rio e da cidade<br>
+<div class="info-row"><span class="ico">🕐</span><span>19:40 transfer → 20:30 jantar → 22:15 show → 23:45 retorno</span></div>
+Todos os planos incluem <b>voucher de 30.000 pesos</b> para o Cassino:<br>
+• <b>Solo Show</b> (só show, sem bebidas): <span class="price">R$305</span> — transfer não incluso<br>
+• <b>Last Minute</b> (jantar 3 etapas Menu Porteño + 1 bebida): <span class="price">R$305</span> — transfer não incluso<br>
+• <b>Solo Show VIP</b> (empanada ou pudim + água/refri/cerveja/vinho/champanhe + transfer): <span class="price">R$390</span><br>
+• <b>Cena Show Plateia</b> (jantar 3 etapas + 1 bebida à escolha): <span class="price">R$415</span><br>
+• <b>Cena Show Executivo</b> (jantar 3 etapas + água/refri/cerveja/champanhe/vinho Piel de Lobo): <span class="price">R$485</span><br>
+• <b>Cena Show VIP</b> (jantar 3 etapas Menu VIP + vinho Fond de Cave + bebidas): <span class="price">R$220</span> (mesa compartilhada)<br>
+• <b>Cena Show Black</b> (jantar menu Black + vinho Rutini/Luigi Bosca + champanhe Chandon): <span class="price">R$605</span> — mesa individual<br>
+<em>Transfer para regiões centrais incluso em algumas opções.</em><br><br>
+
+<b>🎭 Tango Porteño</b> — a essência do tango argentino<br>
+<em>Transfer compartilhado incluso para regiões centrais em todos os planos com jantar</em><br>
+• <b>Solo Show</b> (sem jantar, mesa compartilhada): <span class="price">R$250</span> — transfer opcional R$90<br>
+• <b>Solo Show Preferencial</b> (sem jantar, mesa compartilhada): <span class="price">R$315</span><br>
+• <b>Cena Show Plateia</b> (jantar + mesa privada): <span class="price">R$465</span>/pessoa<br>
+• <b>Cena Show Executivo</b> (jantar + mesa privada): <span class="price">R$490</span>/pessoa<br>
+• <b>Cena Show VIP</b> (jantar + mesa privada): <span class="price">R$570</span>/pessoa<br><br>
+
+<b>🎭 Señor Tango</b> — <b>maior casa de espetáculos de Buenos Aires</b> com mais de 40 artistas, estilo Broadway<br>
+<em>Transfer não incluso — opcional por R$115/pessoa (somente hotéis)</em><br>
+• <b>Solo Show</b> (sem jantar, mesa compartilhada): <span class="price">R$450</span><br>
+• <b>Solo Show VIP</b> (sem jantar, mesa privada): <span class="price">R$805</span><br>
+• <b>Cena Show</b> (com jantar, mesa compartilhada): <span class="price">R$630</span><br>
+• <b>Cena Show VIP</b> (com jantar, mesa privada): <span class="price">R$1.250</span><br><br>
+
+<b>🎭 Piazzolla Tango</b> — cozinha internacional + vinhos + espetáculo noturno<br>
+<div class="info-row"><span class="ico">🕐</span><span>19:00 transfer → 20:00 jantar → 22:00 show → 23:00 retorno</span></div>
+<em>Transfer Solo Show: opcional por R$90 (centro) ou R$100 (Palermo)/pessoa</em><br>
+• <b>Solo Show Plateia</b> (2 bebidas: refri/água/vinho/cerveja, mesa individual): <span class="price">R$450</span><br>
+• <b>Solo Show VIP</b> (entrada ou sobremesa + vinho Trivento Golden Reserve + bebidas): <span class="price">R$515</span><br>
+• <b>Cena Show Plateia</b> (jantar + vinho Tribu Malbec/Chardonnay + bebidas): <span class="price">R$450</span><br>
+• <b>Cena Show VIP</b> (drink boas-vindas + jantar Menu VIP + vinho Trivento Golden Reserve): <span class="price">R$915</span>`,
 
   parques_ba: `<h4>🎡 Parques e Atrações — Buenos Aires</h4>
-<b>Parque de La Costa (Tigre):</b><br>
-<span class="price">R$400/pessoa</span> — Sábado, Domingo e feriado — ~7h<br>
-Principal parque de diversões da Argentina. Inclui traslado ida/volta e passaporte.<br><br>
-<b>Bioparque Temaikén:</b><br>
-<span class="price">R$480</span> adulto &nbsp;|&nbsp; <span class="price">R$270</span> criança 3-10 anos — Todos os dias 10:00–18:00<br>
-Zoológico, aquário, museu de história natural, borboletário e setor dos morcegos! Inclui traslado e ingresso.<br><br>
-<b>Mundo Marino (maior parque marinho da América do Sul):</b><br>
-<span class="price">R$945</span> maiores de 10 anos &nbsp;|&nbsp; <span class="price">R$620</span> de 3 a 10 anos — Sábado, Domingo e feriado<br>
-Orcas, golfinhos, leões-marinhos, pinguins e aquário com tubarões! Inclui traslado e ingresso.<br><br>
-<b>Campanópolis (cidade medieval):</b><br>
-<span class="price">R$320/pessoa</span> — Qua–Sex saída 12h / Sáb saída 8h<br>
-Cidade-castelo em González Catán. Praça dos Templários, Salão do Graal, jardins místicos. Visita guiada 1h45.<br><br>
-<b>Campanópolis + Plaza Canning:</b><br>
-<span class="price">R$399/pessoa</span> — Qua–Sex saída 12h / Sáb saída 8h<br>`,
 
-  bodega_ba: `<h4>🍷 Experiências Gastronômicas — Bodega Gamboa</h4>
-<b>Experiência Gamboa:</b><br>
-<span class="price">R$750</span> adulto | <span class="price">R$435</span> (12-18 anos) | <span class="price">R$285</span> (3-12 anos)<br>
-Ter–Dom: 10:30–15:00 ou 12:00–16:30<br>
-Visita ao vinhedo, degustação de vinhos e cerveja artesanal da bodega, menu gastronômico.<br><br>
-<b>Imersão Gamboa (apenas adultos):</b><br>
-<span class="price">R$785/pessoa</span> — Ter–Dom: 12:00–15:00<br>
-Crie seu próprio blend! Tour pelo vinhedo, 3 degustações de vinho + cerveja especial. Menu "Terruño".<br>
-Transfer opcional: R$420 (ida e volta)<br><br>
-<b>Pizzaria do Bosquecito:</b><br>
-<span class="price">R$560</span> adulto | <span class="price">R$395</span> crianças 3-18 anos<br>
-Qua–Dom: 12:00–15:30<br>
-Visita guiada + degustação + pizza especial (massa 48h de fermentação, menu 3 etapas) com vinho.<br>`,
+<b>🎢 Parque de La Costa (Tigre):</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$400/pessoa</span> (mínimo 2 pessoas) — traslado ida e volta + passaporte incluso</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Sábado, Domingo e feriados — duração ~7 horas</span></div>
+Principal parque de diversões da Argentina, em Tigre. Jogos, serviços, atrações, restaurantes e <b>shows ao vivo</b> para toda a família!<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br><br>
+
+<b>🦁 Bioparque Temaikén — "Terra da Vida":</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$480/adulto</span> &nbsp;|&nbsp; <span class="price">R$270/criança</span> de 3 a 10 anos (mínimo 2 pessoas) — traslado ida e volta + ingresso incluso</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Todos os dias — 10:00 às 18:00</span></div>
+Complexo que combina: jardins botânicos + zoológico + aquário + museu de história natural. Destaques:<br>
+• <b>Setor dos morcegos</b> • <b>Borboletário</b> • Aquário com vida marinha argentina e oceanos<br>
+• Animais de fazenda • <b>Atividades interativas (ordenha!)</b><br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais<br><br>
+
+<b>🐋 Mundo Marino — Maior Parque Marinho da América do Sul:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$945</span> maiores de 10 anos &nbsp;|&nbsp; <span class="price">R$620</span> de 3 a 10 anos (mínimo 2 pessoas) — traslado ida e volta + ingresso incluso</span></div>
+<div class="info-row"><span class="ico">🕐</span><span>Sábado, Domingo e feriados — Saída: 06:00 / Chegada parque: ~10:00 / Saída parque: 16:00 / Fim: ~20:00</span></div>
+Espetáculos com <b>orcas, golfinhos, leões-marinhos e pinguins</b>. Aquário impressionante com tubarões, medusas e diversas espécies marinhas.<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Fotos profissionais (contratar separado)<br><br>
+
+<b>🏰 Campanópolis — Cidade Medieval:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$320/pessoa</span> — traslado ida e volta + passaporte para visita guiada incluso</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Quarta a Sexta: saída às 12:00 &nbsp;|&nbsp; Sábado: saída às 08:00</span></div>
+Em González Catán — cidade-castelo que transporta os visitantes para a <b>Idade Média</b> com muralhas, torres e ruas de paralelepípedos. Destaques:<br>
+• <b>Praça dos Templários</b> • <b>Salão do Graal</b> • <b>Jardins místicos</b><br>
+• Visita guiada de ~1h45 + tempo adicional para fotos e piqueniques<br>
+<span class="tag red">❌ NÃO INCLUSO</span> Alimentação • Despesas pessoais • Fotos profissionais (contratar separado)<br><br>
+
+<b>🏰🛍️ Campanópolis + Plaza Canning:</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$399/pessoa</span> — traslado ida e volta + passaporte visita guiada + parada Plaza Canning</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Quarta a Sexta: saída às 12:00 &nbsp;|&nbsp; Sábado: saída às 08:00</span></div>
+Campanópolis + passeio pela <b>Plaza Canning</b>, um shopping a céu aberto com arquitetura que lembra uma mini Europa!`,
+
+  bodega_ba: `<h4>🍷 Enoturismo — Bodega Gamboa (Buenos Aires)</h4>
+<div class="info-row"><span class="ico">📍</span><span>Experiência completa de enoturismo a poucos km de Buenos Aires, com vinhedos e produção própria</span></div>
+
+<b>🍷 Experiência Gamboa</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$750</span> adulto &nbsp;|&nbsp; <span class="price">R$435</span> (12–18 anos) &nbsp;|&nbsp; <span class="price">R$285</span> (3–12 anos)</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Terça a Domingo &nbsp;|&nbsp; 10:30–15:00 <b>ou</b> 12:00–16:30</span></div>
+Imersão guiada pela bodega e vinhedo com guia especializado. Inclui: visita ao vinhedo com caminhada pelo bosque, 2 degustações de vinho da bodega, degustação surpresa de cerveja artesanal feita com sumo de uva, e menu gastronômico completo com pratos da estação harmonizados com vinhos da bodega.<br>
+<div class="info-row"><span class="ico">✅</span><span><b>Inclui:</b> guia, visita ao vinhedo, degustações de vinho e cerveja artesanal, menu gastronômico</span></div>
+<div class="info-row"><span class="ico">❌</span><span><b>Não inclui:</b> despesas pessoais, alimentação extra, bebidas extras, transfer (contratação separada)</span></div>
+
+<b>🍇 Imersão Gamboa <span style="color:#e74c3c">(somente adultos)</span></b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$785</span> por pessoa</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Terça a Domingo &nbsp;|&nbsp; 12:00–15:00</span></div>
+Experiência exclusiva onde o cliente <b>cria seu próprio blend</b> em ambiente íntimo na cava. Inclui: aula de blend explorando aromas e sabores, tour pelo vinhedo com degustação de 2 vinhos, visita à bodega com explicação do processo de vinificação + 3ª degustação, degustação de cerveja especial feita com mosto de uva, e menu "Terruño" com pratos da estação e melhores vinhos Gamboa.<br>
+<div class="info-row"><span class="ico">🚌</span><span>Transfer opcional: <span class="price">R$420</span> ida e volta</span></div>
+<div class="info-row"><span class="ico">✅</span><span><b>Inclui:</b> aula de blend, tour vinhedo, 3 degustações de vinho + cerveja especial, menu Terruño</span></div>
+<div class="info-row"><span class="ico">❌</span><span><b>Não inclui:</b> despesas pessoais, transfer (opcional R$420 ida e volta)</span></div>
+
+<b>🍕 Pizzaria do Bosquecito</b>
+<div class="info-row"><span class="ico">💰</span><span><span class="price">R$560</span> adulto &nbsp;|&nbsp; <span class="price">R$395</span> crianças (3–18 anos)</span></div>
+<div class="info-row"><span class="ico">📅</span><span>Quarta a Domingo &nbsp;|&nbsp; 12:00–15:30</span></div>
+Visita exclusiva combinando natureza do bosque nativo com vista para o vinhedo. Inclui: visita guiada com degustações de vinho em diferentes pontos do percurso, visita à bodega com explicação do processo de produção, e pizza especial com <b>massa de 48h de fermentação</b> servida em menu de 3 etapas acompanhada de vinho da bodega.<br>
+<div class="info-row"><span class="ico">🚌</span><span>Transfer opcional: <span class="price">R$440</span> ida e volta</span></div>
+<div class="info-row"><span class="ico">✅</span><span><b>Inclui:</b> visita guiada, degustações de vinho, pizza especial (menu 3 etapas) com vinho</span></div>
+<div class="info-row"><span class="ico">❌</span><span><b>Não inclui:</b> despesas pessoais, transfer (opcional R$440 ida e volta)</span></div>
+<div class="info-row"><span class="ico">💡</span><span>Pagamento 100% à vista tem <b>10% de desconto</b></span></div>`,
 
   pagamento_ba: `<h4>💳 Dados de Pagamento — Buenos Aires</h4>
 <b>Chave PIX (CNPJ):</b> <code>61221696000170</code><br>
@@ -1117,6 +1362,12 @@ function findAnswer(rawQuery) {
     return KB.citytour_ba;
   if (has(q, 'city tour') && !has(q, 'rio', 'bariloche'))
     return KB.citytour_ba;
+  if (has(q, 'tour cultural', 'ateneo', 'el ateneo', 'teatro colon', 'teatro colón', 'malba', 'museu belas artes', 'belas artes') && has(q, 'buenos', 'argentina', 'ba'))
+    return KB.citytour_ba;
+  if (has(q, 'ensaio fotografico', 'ensaio foto', 'fotos profissionais', 'motorista particular', 'full day') && has(q, 'buenos', 'argentina', 'ba'))
+    return KB.citytour_ba;
+  if (has(q, 'obelisco', 'caminito', 'recoleta', 'palermo', 'san telmo', 'puente de la mujer', 'floralis', 'planetario') && has(q, 'buenos', 'argentina', 'ba'))
+    return KB.citytour_ba;
   if (has(q, 'estadio', 'boca', 'river plate', 'bombonera', 'boca juniors', 'futebol') && has(q, 'buenos', 'argentina', 'ba', 'boca', 'river'))
     return KB.estadios_ba;
   if (has(q, 'tigre', 'delta', 'parana', 'catamaras') && has(q, 'buenos', 'argentina', 'tigre'))
@@ -1129,8 +1380,8 @@ function findAnswer(rawQuery) {
     return KB.parques_ba;
   if (has(q, 'bodega', 'vinho', 'gamboa', 'vinhedos', 'pizza', 'gastronomia') && has(q, 'buenos', 'argentina', 'ba'))
     return KB.bodega_ba;
-  if (has(q, 'onibus turistico', 'hop on', 'hop off', 'bus turistico') && has(q, 'buenos', 'argentina'))
-    return `<h4>🚌 Ônibus Turístico — Buenos Aires (Hop On/Off)</h4><div class="info-row"><span class="ico">💰</span><span>24h: <span class="price">R$320</span> adulto / <span class="price">R$205</span> criança 4-11 anos</span></div><div class="info-row"><span class="ico">💰</span><span>48h: <span class="price">R$385</span> adulto / <span class="price">R$250</span> criança</span></div><div class="info-row"><span class="ico">💰</span><span>72h: <span class="price">R$415</span> adulto / <span class="price">R$265</span> criança</span></div><div class="info-row"><span class="ico">🕐</span><span>09:00 às 17:00 a cada 30 min. Audioguia em 9 idiomas.</span></div>`;
+  if (has(q, 'onibus turistico', 'hop on', 'hop off', 'bus turistico', 'audioguia', 'audio guia') && has(q, 'buenos', 'argentina', 'ba'))
+    return KB.citytour_ba;
 
   // RIO DE JANEIRO — passeios específicos
   if (has(q, 'um dia no rio', 'dia no rio') && !has(q, 'sem ticket') && !has(q, 'sin ticket'))
@@ -1220,14 +1471,8 @@ function findAnswer(rawQuery) {
 <b>Buenos Aires:</b> City Tour Full Day com Fotos (R$1.250/carro), Señor Tango VIP (R$1.250), Bodega Gamboa Imersão (R$785)<br>
 <b>Rio de Janeiro:</b> Voo de Helicóptero (R$1.510-3.000), Voo de Parapente (R$990)`;
 
-  // Default
-  return `Desculpe, não encontrei uma resposta específica para sua pergunta. 🤔<br><br>
-Posso te ajudar com informações sobre:<br>
-• <strong>Bariloche</strong> — passeios terrestres, barco, inverno e verão<br>
-• <strong>Buenos Aires</strong> — city tours, tango, parques, gastronomia<br>
-• <strong>Rio de Janeiro</strong> — city tours, aventura, excursões<br>
-• <strong>Traslados e pagamentos</strong> em todos os destinos<br><br>
-Tente perguntar de forma mais específica, como: <em>"Quanto custa o Circuito Chico?"</em> ou <em>"O que está incluso no tour de Buenos Aires?"</em>`;
+  // Default — return null to allow OpenAI fallback
+  return null;
 }
 
 // ============================================================
@@ -1261,18 +1506,326 @@ function removeTyping() {
   if (el) el.remove();
 }
 
-function sendMessage() {
+// ============================================================
+// OPENAI INTEGRATION
+// ============================================================
+let openAIKey       = localStorage.getItem('rota98_openai_key')          || '';
+let openAIModel     = localStorage.getItem('rota98_openai_model')         || 'gpt-4o-mini';
+let aiMode          = localStorage.getItem('rota98_ai_mode')              || 'chat'; // 'chat' | 'assistant'
+let assistantId     = localStorage.getItem('rota98_assistant_id')         || '';
+let threadId        = null; // created fresh each browser session
+let conversationHistory = [];
+const MAX_HISTORY = 8;
+
+const OPENAI_HEADERS = () => ({
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${openAIKey}`,
+  'OpenAI-Beta': 'assistants=v2'
+});
+
+const SYSTEM_PROMPT = `Você é o assistente de vendas interno da Rota 98 Tour, uma agência de turismo especializada em passeios em Buenos Aires, Bariloche e Rio de Janeiro. Responda sempre em português brasileiro, de forma amigável, calorosa e profissional. Você está ajudando a equipe de vendas a tirar dúvidas e fechar vendas com clientes.
+
+CATÁLOGO ROTA 98 TOUR:
+
+BUENOS AIRES:
+• City Tour Privado Full Day c/ Fotos: R$890 (até 4 pax) / R$1.250 (até 6 pax) — 9h, 15 pontos, ensaio fotográfico + parada Puerto Madero
+• City Tour Privado Meio Dia c/ Fotos: R$550 (4 pax) / R$750 (6 pax) — manhã 8h ou tarde 14h, 14 pontos
+• City Tour em Grupo (12 pontos): R$135 adulto / R$90 criança — pontos principais, sem El Ateneo e Recoleta
+• Tour Cultural (El Ateneo, Teatro Colón, MALBA, Museu Belas Artes): R$280 adulto / R$195 criança
+• Ônibus Turístico Hop-On/Off: 24h R$320 | 48h R$385 | 72h R$415 adulto — 9 idiomas, 9h-17h a cada 30min
+• Estadios (Boca Juniors + River Plate): R$320 adulto / R$220 criança — Bombonera, museu, mural Maradona, River desde 1901
+• Tigre + Delta: 3 opções: (1) Passeio guiado Tigre R$175 / (2) Catamaran + museus R$275 / (3) Full Tigre c/ barco privado R$350
+• Navegação Rio de la Plata (open bar, saída La Boca): R$195 adulto / R$130 criança — áudio português
+• Tango — Madero Tango: Cena+Show R$650 adulto / Solo Show R$380; Porteño y Bailarín: R$399-725; Señor Tango: R$365-785; Piazzolla: R$450-915
+• Parques: La Costa R$320 | Temaikén R$480 | Mundo Marino R$420 | Campanópolis R$299 | Campanópolis+Plaza Canning R$399
+• Bodega Gamboa: Experiência Gamboa R$750 adulto (Ter-Dom, 2 horários) | Imersão Gamboa R$785 adultos (blend próprio) | Pizzaria Bosquecito R$560 (pizza massa 48h)
+• Kit Boas-Vindas: chip, cartão SUBE, adaptador de tomada
+
+BARILOCHE:
+• Circuito Chico: R$190 adulto — Cerro Campanario, teleférico, Punto Panorámico, Puerto Pañuelo
+• Cerro Catedral (verão): R$200 adulto + R$120 teleférico opcional | (inverno ski): R$220 adulto + equipamentos à parte
+• Sete Lagos: R$220 adulto — 600km, 7 lagos, Villa La Angostura, almoço por conta
+• Tronador + Ventisquero Negro: R$230 adulto — glaciar ativo, Cascata dos Alemães, Cascata do Tronador
+• El Bolsón: R$200 adulto — artesanato, frutas, chocolate, Cerro Piltriquitrón opcional (R$230 + teleférico)
+• Isla Victoria + Bosque Arrayanes: R$220 (transporte) + R$260 (barco) = R$480 combo
+• Puerto Blest + Cascata Los Cántaros: R$220 (transporte) + R$320 (barco) = R$540 combo
+• Snowcat Patagonia (inverno): R$400 adulto — veículo especial neve, trilha na montanha
+• Nieve al Límite (inverno): R$530 adulto — ski/snowboard completo com equipamento
+• Circuito Grande: R$250 adulto — Vale Encantado, Dedo de Deus, Pedra Colorada, Villa Traful
+
+RIO DE JANEIRO:
+• Um Dia no Rio (com tickets Cristo+Pão de Açúcar): R$500-550 adulto
+• Um Dia no Rio (sem tickets): R$220 adulto
+• Cristo + City Tour: R$310 adulto
+• Rio Expresso (Cristo+Pão de Açúcar+Maracanã+Sambódromo): R$475 adulto
+• Pão de Açúcar (bondinho): R$330 adulto
+• Boulevard Olímpico + Aquário Marinho: R$320 adulto
+• Maracanã Experience: R$320 adulto
+• Favela Tour Rocinha: R$260 adulto
+• Traslados: Santos Dumont e Galeão para Zona Sul e Zona Oeste
+
+PAGAMENTO: PIX (10% desconto) | Banco Inter ag 0001 conta 45783527-3 | Cartão até 10x sem juros
+CNPJ: 61.221.696/0001-70 — Cadastur (Brasil) + RNAV Legajo 19491 (Argentina)
+
+DIRETRIZES: Seja direto, use emojis com moderação, mencione preços quando relevante, sugira 2-3 opções quando perguntar sobre categoria de passeio. Se o cliente tiver perfil específico, personalize a sugestão. Para roteiros, organize por dia.`;
+
+function updateAIBadge() {
+  const dot = document.getElementById('aiDot');
+  const label = document.getElementById('aiLabel');
+  if (!dot) return;
+  if (openAIKey) {
+    dot.classList.add('on');
+    if (aiMode === 'assistant' && assistantId) {
+      label.textContent = `🎯 Assistant ON`;
+    } else {
+      label.textContent = `🤖 IA ON (${openAIModel})`;
+    }
+  } else {
+    dot.classList.remove('on');
+    label.textContent = '⚙️ IA Config';
+  }
+}
+
+function onModeChange() {
+  const mode = document.querySelector('input[name="aiMode"]:checked')?.value || 'chat';
+  document.getElementById('chatModeOptions').style.display      = mode === 'chat'      ? '' : 'none';
+  document.getElementById('assistantModeOptions').style.display = mode === 'assistant' ? '' : 'none';
+}
+
+function updateSettingsStatus() {
+  const box = document.getElementById('keyStatusBox');
+  if (!box) return;
+  if (openAIKey) {
+    const modeLabel = (aiMode === 'assistant' && assistantId)
+      ? `Assistants API — <strong>${assistantId.slice(0,20)}…</strong>`
+      : `Chat Completions — modelo: <strong>${openAIModel}</strong>`;
+    box.innerHTML = `<div class="key-status ok">✅ Chave configurada — ${modeLabel}</div>`;
+  } else {
+    box.innerHTML = `<div class="key-status missing">⚠️ Nenhuma chave configurada. O assistente usará apenas a base local.</div>`;
+  }
+  if (openAIKey) {
+    const keyInput = document.getElementById('settingsKey');
+    if (keyInput) keyInput.placeholder = '(chave salva — deixe em branco para manter)';
+  }
+  const modelSelect = document.getElementById('settingsModel');
+  if (modelSelect) modelSelect.value = openAIModel;
+  const modeRadio = document.getElementById(aiMode === 'assistant' ? 'modeAssistant' : 'modeChat');
+  if (modeRadio) { modeRadio.checked = true; onModeChange(); }
+  const asstInput = document.getElementById('settingsAssistantId');
+  if (asstInput && assistantId) asstInput.placeholder = `(salvo: ${assistantId.slice(0,24)}…)`;
+}
+
+function saveAISettings() {
+  const keyInput   = document.getElementById('settingsKey').value.trim();
+  const model      = document.getElementById('settingsModel').value;
+  const mode       = document.querySelector('input[name="aiMode"]:checked')?.value || 'chat';
+  const asstInput  = document.getElementById('settingsAssistantId').value.trim();
+
+  if (keyInput) { openAIKey = keyInput; localStorage.setItem('rota98_openai_key', openAIKey); }
+  openAIModel = model;  localStorage.setItem('rota98_openai_model', openAIModel);
+  aiMode      = mode;   localStorage.setItem('rota98_ai_mode', aiMode);
+  if (asstInput) { assistantId = asstInput; localStorage.setItem('rota98_assistant_id', assistantId); }
+
+  // Reset thread when switching to assistant mode
+  if (aiMode === 'assistant') threadId = null;
+
+  updateAIBadge();
+  document.getElementById('settingsKey').value = '';
+  document.getElementById('settingsAssistantId').value = '';
+  closeModal('modal-settings');
+
+  const modeMsg = (aiMode === 'assistant' && assistantId)
+    ? `🎯 Conectado ao Assistente <strong>${assistantId}</strong>! As respostas virão diretamente do seu Assistente OpenAI.`
+    : `✅ IA configurada! Modo Chat Completions com <strong>${openAIModel}</strong>. Pode perguntar qualquer coisa! 🤖`;
+  addMessage(modeMsg, false);
+}
+
+function clearAISettings() {
+  openAIKey = ''; assistantId = ''; threadId = null;
+  localStorage.removeItem('rota98_openai_key');
+  localStorage.removeItem('rota98_assistant_id');
+  localStorage.removeItem('rota98_ai_mode');
+  aiMode = 'chat';
+  updateAIBadge();
+  updateSettingsStatus();
+}
+
+// ---- CHAT COMPLETIONS ----
+async function callChatCompletions(userMessage, isRoteiro = false) {
+  const messages = [{ role: 'system', content: SYSTEM_PROMPT }];
+  if (!isRoteiro) messages.push(...conversationHistory.slice(-(MAX_HISTORY * 2)));
+  messages.push({ role: 'user', content: userMessage });
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${openAIKey}` },
+    body: JSON.stringify({ model: openAIModel, messages, max_tokens: isRoteiro ? 1200 : 700, temperature: 0.75 })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `Erro ${res.status}`); }
+  const data = await res.json();
+  const reply = data.choices[0].message.content;
+  if (!isRoteiro) {
+    conversationHistory.push({ role:'user', content:userMessage }, { role:'assistant', content:reply });
+    if (conversationHistory.length > MAX_HISTORY * 2) conversationHistory = conversationHistory.slice(-(MAX_HISTORY * 2));
+  }
+  return reply;
+}
+
+// ---- ASSISTANTS API ----
+async function ensureThread() {
+  if (threadId) return;
+  const res = await fetch('https://api.openai.com/v1/threads', {
+    method: 'POST', headers: OPENAI_HEADERS(), body: JSON.stringify({})
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `Erro criando thread: ${res.status}`); }
+  threadId = (await res.json()).id;
+}
+
+async function callAssistantsAPI(userMessage) {
+  await ensureThread();
+
+  // Add user message to thread
+  const msgRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
+    method: 'POST', headers: OPENAI_HEADERS(),
+    body: JSON.stringify({ role: 'user', content: userMessage })
+  });
+  if (!msgRes.ok) { const e = await msgRes.json().catch(()=>({})); throw new Error(e.error?.message || `Erro adicionando mensagem`); }
+
+  // Create run
+  const runRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
+    method: 'POST', headers: OPENAI_HEADERS(),
+    body: JSON.stringify({ assistant_id: assistantId })
+  });
+  if (!runRes.ok) { const e = await runRes.json().catch(()=>({})); throw new Error(e.error?.message || `Erro criando run`); }
+  const run = await runRes.json();
+
+  // Poll until complete (max ~30s)
+  let status = run.status;
+  for (let i = 0; i < 30 && !['completed','failed','cancelled','expired'].includes(status); i++) {
+    await new Promise(r => setTimeout(r, 1000));
+    const pollRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${run.id}`, {
+      headers: OPENAI_HEADERS()
+    });
+    status = (await pollRes.json()).status;
+  }
+  if (status !== 'completed') throw new Error(`Assistente terminou com status: ${status}`);
+
+  // Get last assistant message
+  const listRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages?limit=1&order=desc`, {
+    headers: OPENAI_HEADERS()
+  });
+  if (!listRes.ok) { const e = await listRes.json().catch(()=>({})); throw new Error(e.error?.message || `Erro lendo mensagens`); }
+  const listData = await listRes.json();
+  const lastMsg = listData.data[0];
+  // Extract text from content blocks
+  return lastMsg.content.filter(c => c.type === 'text').map(c => c.text.value).join('\n');
+}
+
+// ---- ROUTER ----
+async function callOpenAI(userMessage, isRoteiro = false) {
+  if (aiMode === 'assistant' && assistantId) {
+    return await callAssistantsAPI(userMessage);
+  }
+  return await callChatCompletions(userMessage, isRoteiro);
+}
+
+function novaConversa() {
+  threadId = null;
+  conversationHistory = [];
+  const container = document.getElementById('chatMessages');
+  container.innerHTML = '';
+  addMessage('Nova conversa iniciada! 🔄 Como posso ajudar?', false);
+}
+
+function textToHtml(text) {
+  // Convert plain text AI response to simple HTML
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+async function sendMessage() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
   addMessage(text, true);
   showTyping();
-  setTimeout(() => {
+
+  // Try local KB first
+  const kbAnswer = findAnswer(text);
+  if (kbAnswer) {
+    setTimeout(() => {
+      removeTyping();
+      addMessage(kbAnswer, false);
+    }, 500 + Math.random() * 300);
+    return;
+  }
+
+  // No KB match → try OpenAI
+  if (!openAIKey) {
+    setTimeout(() => {
+      removeTyping();
+      addMessage(`Não encontrei essa informação na base local. 🤔<br><br>Para respostas com IA natural, configure sua chave OpenAI clicando em <strong>⚙️ IA Config</strong> no cabeçalho.<br><br>Ou tente perguntar sobre: <em>Bariloche, Buenos Aires, Rio de Janeiro, traslados, pagamentos...</em>`, false);
+    }, 400);
+    return;
+  }
+
+  try {
+    const aiReply = await callOpenAI(text);
     removeTyping();
-    const answer = findAnswer(text);
-    addMessage(answer, false);
-  }, 600 + Math.random() * 400);
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'msg bot ai';
+    msgDiv.innerHTML = `<div class="bubble">${textToHtml(aiReply)}</div><div class="msg-time">🤖 IA · ${getTime()}</div>`;
+    const container = document.getElementById('chatMessages');
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  } catch (err) {
+    removeTyping();
+    addMessage(`❌ Erro na IA: <strong>${err.message}</strong><br>Verifique sua chave OpenAI em ⚙️ IA Config.`, false);
+  }
+}
+
+async function gerarRoteiro() {
+  const profile = document.getElementById('roteiroProfile').value.trim();
+  if (!profile) { alert('Descreva o perfil do cliente antes de gerar o roteiro.'); return; }
+  if (!openAIKey) { alert('Configure a chave OpenAI em ⚙️ IA Config primeiro!'); return; }
+
+  const btn = document.getElementById('roteiroBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Gerando roteiro com IA...';
+
+  const prompt = `Crie um roteiro de passeios personalizado para este cliente da Rota 98 Tour. Use apenas os passeios e preços do nosso catálogo. Organize por dias se aplicável, justifique cada escolha baseado no perfil do cliente, e inclua os preços.
+
+Perfil do cliente: ${profile}
+
+Formate o roteiro de forma clara e convincente para o vendedor usar na apresentação ao cliente.`;
+
+  closeModal('modal-roteiro');
+  document.getElementById('roteiroProfile').value = '';
+
+  addMessage(`🗺️ Gerar roteiro para: "${profile}"`, true);
+  showTyping();
+
+  try {
+    const roteiro = await callOpenAI(prompt, true);
+    removeTyping();
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'msg bot ai';
+    msgDiv.innerHTML = `<div class="bubble"><h4>🗺️ Roteiro Personalizado — IA</h4>${textToHtml(roteiro)}</div><div class="msg-time">🤖 IA · ${getTime()}</div>`;
+    const container = document.getElementById('chatMessages');
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  } catch (err) {
+    removeTyping();
+    addMessage(`❌ Erro ao gerar roteiro: ${err.message}`, false);
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🗺️ Gerar Roteiro Personalizado com IA';
 }
 
 function askQuestion(q) {
@@ -1284,6 +1837,7 @@ function askQuestion(q) {
 function openModal(id) {
   document.getElementById(id).classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (id === 'modal-settings') updateSettingsStatus();
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
@@ -1295,6 +1849,9 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
 });
+
+// Init
+updateAIBadge();
 </script>
 </body>
 </html>
